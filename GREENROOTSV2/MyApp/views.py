@@ -6,6 +6,3 @@ def all_retailer(request):
     ret_list = Retailer.objects.all()
     return render(request, 'retailerlist.html',
                   {'ret_list': ret_list})
-
-
-
