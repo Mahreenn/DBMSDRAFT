@@ -1,5 +1,5 @@
 from django.db import models
-from MyApp.modelsgrad import Inspector,HarvestedProduce
+from MyApp.modelsgrad import Inspector,HarvestedProduce,NutritionSpecialist
 
 
 class Warehouse(models.Model):
@@ -60,7 +60,13 @@ class LogisticsCompany(models.Model):
 
     def __str__(self):
         return f"{self.company_name} - {self.road}, {self.area}"
+    
+class logistics(models.Model):
+    company = models.ForeignKey(LogisticsCompany, on_delete=models.CASCADE)
+    vehicle_Num = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.company} provided Vehicle No. {self.vehicle_num}"
 
 
 class PackingFacility(models.Model):
@@ -123,3 +129,38 @@ class DeliveryofPacked(models.Model):
 
     def __str__(self):
         return f"Delivery {self.delivery_id} - {self.quantity} units at ${self.cost:.2f} from {self.warehouse} by {self.vehicle}"    
+    
+class NutritionContentReport(models.Model):
+    fat_content = models.FloatField()
+    sugar_content = models.FloatField()
+    vitamin_content = models.FloatField()
+    mineral_content = models.FloatField()
+    nutritionist_id = models.ForeignKey(NutritionSpecialist, on_delete=models.CASCADE)
+    barcode = models.ForeignKey(PackedProduce, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return (f"NutritionContentReport(Nutritionist={self.nutritionist_id.name}, "
+                f"Barcode={self.barcode.product_name}, fat={self.fat_content}%, "
+                f"sugar={self.sugar_content}%, vitamin={self.vitamin_content}%, "
+                f"mineral={self.mineral_content}%)")
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['nutritionist_id', 'barcode'], name='unique_nutritionist_barcode')
+        ]
+
+class InspectionReport(models.Model):
+    date_received = models.DateField()
+    date_expired = models.DateField()
+    ventilation = models.CharField(max_length=55)
+    cleanliness = models.CharField(max_length=55)
+    inspector_id = models.ForeignKey(Inspector, on_delete=models.CASCADE)
+    vehicle_id = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return (f"InspectionReport(Inspector={self.inspector_id.name}, "
+                f"Vehicle={self.vehicle_id.make} {self.vehicle_id.model}, "
+                f"Date Received={self.date_received}, Date Expired={self.date_expired})")
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['inspector_id', 'vehicle_id', 'date_received'], name='unique_inspector_vehicle_date')
+        ]

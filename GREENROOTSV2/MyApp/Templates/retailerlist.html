@@ -1,6 +1,12 @@
 <html>
     <body>
         <h1>REATILERS LIST</h1>
-        {{ ret_list }}
+        {% for retailer in ret_list %}
+        <strong>{{ retailer }} </strong> 
+        <ul>   
+           <li>Accepted Grade:{{ retailer.acceptedgrade }} </li> 
+        </ul>
+        {% endfor %}
+    
     </body>
 </html>
