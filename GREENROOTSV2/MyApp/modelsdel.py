@@ -4,11 +4,11 @@ from MyApp.modelsgrad import Inspector,HarvestedProduce,NutritionSpecialist
 
 class Warehouse(models.Model):
     warehouseid = models.IntegerField(primary_key=True)
-    address = models.CharField(max_length=55)
+    address = models.CharField(max_length=155)
 
     def __str__(self):
-        return self.warehouseid
-
+        return str (self.warehouseid)
+    
 class Retailer(models.Model):
     name = models.CharField(max_length=65, primary_key=True)
     acceptedgrade = models.CharField(max_length=1)
@@ -50,7 +50,7 @@ class Vehicle(models.Model):
     gps_tracking_number = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
-        return f"Vehicle {self.registration_plate_no} - {self.model} (Capacity: {self.max_capacity}kg)"
+        return f"Plate Num: {self.registration_plate_no} - {self.model} (Capacity: {self.max_capacity}kg)"
 
 
 class LogisticsCompany(models.Model):
@@ -113,7 +113,7 @@ class PackedProduce(models.Model):
     #source =  models.ForeignKey(PackingFacility, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Barcode {self.barcode} - {self.material} - ${self.cost_per_unit:.2f}"
+        return f" {self.barcode}"
     
     
 
