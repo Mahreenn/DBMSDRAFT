@@ -20,7 +20,7 @@ def add_delP(request):    #for c in CRUD
         form = delPForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/add-delP?,submitted=True')
+            return HttpResponseRedirect('add_delP?submitted=True')
     else:
         form = delPForm
         if 'submitted' in request.GET:

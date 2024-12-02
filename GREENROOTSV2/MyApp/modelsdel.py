@@ -1,5 +1,5 @@
 from django.db import models
-from MyApp.modelsgrad import Inspector,HarvestedProduce,NutritionSpecialist
+from MyApp.modelsgrad import Inspector,HarvestedProduce,NutritionSpecialist,GovernmentSpecialist
 
 
 class Warehouse(models.Model):
@@ -114,8 +114,6 @@ class PackedProduce(models.Model):
 
     def __str__(self):
         return f" {self.barcode}"
-    
-    
 
 class DeliveryofPacked(models.Model):
     delivery_id = models.AutoField(primary_key=True)
@@ -164,3 +162,17 @@ class InspectionReport(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['inspector_id', 'vehicle_id', 'date_received'], name='unique_inspector_vehicle_date')
         ]
+
+class PackingFacilityCert(models.Model):
+    id = models.AutoField(primary_key=True)  
+    certificateName = models.CharField(max_length=55)
+    date_received = models.DateField()
+    facilityID = models.ForeignKey(PackingFacility, on_delete=models.CASCADE)
+    specialistID = models.ForeignKey(GovernmentSpecialist, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['certificateName', 'facilityID','date_received'], name='unique_certificate')
+        ]
+    def __str__(self):
+        return f"Certificate: {self.certificateName}, Facility ID: {self.facilityID} on {self.date_received}"

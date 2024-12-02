@@ -5,4 +5,5 @@ from .modelsdel import DeliveryofPacked
 class delPForm(ModelForm):
     class Meta:
         model = DeliveryofPacked
-        fields = "__all__"             #('transport_date','temperature','cost','quantity','barcode', warehouseid,vehicleid)   
+        fields = "__all__"             #('transport_date','temperature','cost','quantity','barcode', 'warehouseid','vehicleid')  
+
