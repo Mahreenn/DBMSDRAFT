@@ -1,11 +1,22 @@
 <html>
-    <body>
+    <body >
         <h1>REATILERS LIST</h1>
+        <br/>
+
         {% for retailer in ret_list %}
-        <strong>{{ retailer }} </strong> 
-        <ul>   
-           <li>Accepted Grade:{{ retailer.acceptedgrade }} </li> 
-        </ul>
+        <div class="card">
+            <div class="card-header">
+                {{ retailer }} 
+            </div>
+            <div class="card-body">
+              <h5 class="card-title"></h5>
+              <p class="card-text"><ul>   
+                <li>Accepted Grade:{{ retailer.acceptedgrade }} </li> 
+             </ul></p>
+            </div>
+          </div>
+        
+        <br/>
         {% endfor %}
     
     </body>

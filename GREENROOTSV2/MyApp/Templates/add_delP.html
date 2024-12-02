@@ -1,0 +1,19 @@
+<html>
+    <body>
+        <center>
+            <h1>Add Delivery of Packed Produce to database</h1>
+            <br/><br/>
+            {% if submitted %}
+               The new delivery was added to database succesfully
+
+            {% else %}
+                <form action="" method=POST>
+                    {% csrf_token %}
+                     {{ form.as_p }}
+                     <input type="submit" value="Submit" class="btn btn-secondary">
+                </form>
+            {% endif %}
+
+        </center>
+    </body>
+</html>>

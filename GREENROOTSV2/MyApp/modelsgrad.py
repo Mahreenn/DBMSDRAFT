@@ -41,6 +41,7 @@ class HarvestedProduce(models.Model):
     weather_conditions = models.CharField(max_length=255)
     pesticides_used = models.BooleanField()
     #nutrionistID = models.ForeignKey(NutritionSpecialist, on_delete=models.CASCADE)
+    #produceID = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Batch {self.batch_id} - {self.weight}kg, {self.colour}, {self.smoothness} (Sown: {self.sowing_date}, Harvested: {self.harvest_date})"

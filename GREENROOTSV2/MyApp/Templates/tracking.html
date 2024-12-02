@@ -1,0 +1,27 @@
+<html>
+    <body >
+        <h1>Tracking details</h1>
+        <br/>
+
+        {% for p in packeddel_list %}
+        <div class="card">
+            <div class="card-header">
+                {{ p }} 
+            </div>
+            <div class="card-body">
+              <h5 class="card-title"></h5>
+              <p class="card-text"><ul>   
+                <li>transport_date:{{ p.transport_date }} </li> 
+                <li>cost:{{ p.cost }} </li> 
+                <li>quantity:{{ p.quantity }} </li> 
+             </ul>
+            </p>
+            </div>
+          </div>
+        
+        <br/>
+        {% endfor %}
+          <strong> Add new Delivery of Packed Produce</strong>
+    
+    </body>
+</html>
