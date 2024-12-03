@@ -11,7 +11,7 @@ def all_retailer(request):
 
 def deliveryP(request):  # for reading in CRUD
     packeddel_list = DeliveryofPacked.objects.all()
-    return render(request, 'tracking.html',
+    return render(request, 'deliveriesP.html',
                   {'packeddel_list': packeddel_list})
 
 def add_delP(request):    #for c in CRUD
@@ -20,12 +20,17 @@ def add_delP(request):    #for c in CRUD
         form = delPForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('add_delP?submitted=True')
+            return HttpResponseRedirect('warehousemanagerDashboard.html?submitted=True')
     else:
         form = delPForm
         if 'submitted' in request.GET:
             submitted = True
     return render(request, 'add_delP.html',{'form':form,'submitted':submitted})
+
+def WMDash(request):
+    packeddel_list_ = DeliveryofPacked.objects.all()
+    return render(request,'warehousemanagerDashboard.html',
+                  {'packeddel_list': packeddel_list_})
 
 def homepage(request):
     return render(request,'bg.html')

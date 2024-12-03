@@ -1,0 +1,107 @@
+font-weight: bold;
+margin-bottom: 2rem;
+color: #333;
+}
+
+.navigation-buttons {
+display: flex;
+gap: 1.5rem;
+margin-bottom: 2rem;
+}
+
+.navigation-buttons a {
+text-decoration: none;
+color: white;
+font-weight: bold;
+}
+
+
+
+
+.stats-container {
+display: flex;
+gap: 2rem;
+flex-wrap: wrap;
+justify-content: center;
+}
+
+
+</style>
+
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+</head>
+
+<body>
+
+<div class="top-banner">
+</div>
+
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+<div class="container-fluid">
+<a href="#" class="navbar-brand mb-0 h1">
+  <img class="d-inline-block align-top rounded-circle" src="kiwi.PNG" width="30" height="30" alt="Logo">
+   <b> Green Roots </b>
+</a>
+<button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId">
+  <span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="collapsibleNavId">
+  <ul class="navbar-nav ms-auto me-5 list-unstyled">
+    <li class="nav-item">
+      <a class="nav-link" href="add_delP.html">Add a New Delivery</a>
+    </li>
+     
+      <li class="nav-item">
+        <a class="nav-link" href="#">Warehouse Distribution Records</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Logistics Details</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="warehousemanagerDashboard.html">Homepage</a>
+      </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Log Out</a>
+    </li>
+  </ul>
+</div>
+</div>
+</nav>
+
+
+
+<div class="dashboard-title"> Warehouse Manager Dashboard</div>
+
+
+
+  <h1>Deliveries to the Warehouse</h1>
+        <br/>
+        <br/>
+
+        {% for p in packeddel_list %}
+        <div class="card">
+            <div class="card-header">
+                {{ p }} 
+            </div>
+            <div class="card-body">
+              <h5 class="card-title"></h5>
+              <p class="card-text"><ul>   
+                <li>transport_date:{{ p.transport_date }} </li> 
+                <li>cost:{{ p.cost }} </li> 
+                <li>quantity:{{ p.quantity }} </li> 
+             </ul>
+            </p>
+            </div>
+          </div>
+        
+        <br/>
+        {% endfor %}
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+</body>
+</html>

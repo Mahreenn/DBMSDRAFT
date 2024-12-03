@@ -126,7 +126,7 @@ class DeliveryofPacked(models.Model):
     barcode = models.ForeignKey('PackedProduce', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Delivery {self.delivery_id} - {self.quantity} units at ${self.cost:.2f} from {self.warehouse} by {self.vehicle}"    
+        return f"Delivery {self.delivery_id} - {self.quantity} units at ${self.cost:.2f} from {self.warehouseid} by {self.vehicleid}"    
     
 class NutritionContentReport(models.Model):
     fat_content = models.FloatField()
