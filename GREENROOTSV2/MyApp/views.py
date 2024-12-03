@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .modelsdel import Retailer,DeliveryofPacked
+from .modelsdel import Retailer,DeliveryofPacked,WarehouseDistribution
 from .forms import delPForm
 from django.http import HttpResponseRedirect
 
@@ -31,6 +31,11 @@ def WMDash(request):
     packeddel_list_ = DeliveryofPacked.objects.all()
     return render(request,'warehousemanagerDashboard.html',
                   {'packeddel_list': packeddel_list_})
+
+def distrib(request):
+    distribution_list =  WarehouseDistribution.objects.all()
+    return render(request,'warehousedistribution.html',
+                  {'distribution_list': distribution_list})
 
 def homepage(request):
     return render(request,'bg.html')

@@ -15,16 +15,23 @@ class Retailer(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Supplier(models.Model):
+     name = models.CharField(max_length=65, primary_key=True)
+
+     def __str__(self):
+        return self.name
 
 class WarehouseDistribution(models.Model):
+    date = models.DateField(blank=True, null=True)
     warehouseid = models.ForeignKey(Warehouse, on_delete=models.CASCADE,null=True)
-    retailername = models.ForeignKey(Retailer, on_delete=models.CASCADE, null=True)
+    supname = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return f"Distribution from {self.warehouseid} to  {self.retailername}"
+        return f"Distribution from {self.warehouseid} to  {self.supname}"
     
     class Meta:
-        unique_together = ['warehouseid', 'retailername'] 
+        unique_together = ['warehouseid', 'supname','date'] 
 
 class WarehouseCert(models.Model):
     date_received = models.DateField(blank=True, null=True)
