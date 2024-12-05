@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delivery Charts</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between; /* Space out the charts */
+            gap: 20px; /* Add space between charts */
+            padding: 20px;
+        }
+        .chart-item {
+            flex: 1 1 30%; /* Adjust the width to 30% of the container */
+            min-width: 300px; /* Set a minimum width */
+        }
+        canvas {
+            width: 100%; /* Make the canvas take up the full width of the container */
+        }
+    </style>
+</head>
+<body>
+    <h1>Delivery Charts</h1>
+    <div class="chart-container">
+        <!-- Bar Chart -->
+        <div class="chart-item">
+            <h2>Quantity Delivered Over Time</h2>
+            <canvas id="barChart"></canvas>
+        </div>
+
+        <!-- Pie Chart -->
+        <div class="chart-item">
+            <h2>Quantity Delivered by Material Type</h2>
+            <canvas id="pieChart"></canvas>
+        </div>
+
+        <!-- Line Chart -->
+        <div class="chart-item">
+            <h2>Delivery Cost Over Time</h2>
+            <canvas id="lineChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Bar chart data
+        const barChartData = {{ bar_chart_data|safe }};
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: barChartData.labels,
+                datasets: [{
+                    label: 'Quantity Delivered',
+                    data: barChartData.values,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Quantity'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Pie chart data
+        const pieChartData = {{ pie_chart_data|safe }};
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: pieChartData.labels,
+                datasets: [{
+                    label: 'Quantity Delivered',
+                    data: pieChartData.values,
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+
+        // Line chart data
+        const lineChartData = {{ line_chart_data|safe }};
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: lineChartData.labels,
+                datasets: [{
+                    label: 'Total Cost',
+                    data: lineChartData.values,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Cost'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

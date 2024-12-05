@@ -58,6 +58,20 @@ class Vehicle(models.Model):
 
     def __str__(self):
         return f"Plate Num: {self.registration_plate_no} - {self.model} (Capacity: {self.max_capacity}kg)"
+    
+class VehicleGPSLog(models.Model):
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='gps_logs')
+   # coordinates = geomodels.PointField()  #latitude and longitude  # configure GEODJANGO first
+    timestamp = models.DateTimeField(auto_now_add=True)
+    speed = models.FloatField(blank=True, null=True)  # Speed in km/h or mph
+    altitude = models.FloatField(blank=True, null=True)  # Altitude in meters
+    heading = models.FloatField(blank=True, null=True)  # Heading/direction in degrees
+
+    def __str__(self):
+        return f"{self.vehicle} - {self.timestamp}"
+
+    class Meta:
+        ordering = ['-timestamp']
 
 
 class LogisticsCompany(models.Model):

@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from .modelsdel import Retailer,DeliveryofPacked,WarehouseDistribution
+from .modelsdel import Retailer,DeliveryofPacked,WarehouseDistribution,PackedProduce
 from .forms import delPForm
 from django.http import HttpResponseRedirect
+from django.db.models import Sum
 
 # Create your views here.
 def all_retailer(request):
@@ -36,6 +37,38 @@ def distrib(request):
     distribution_list =  WarehouseDistribution.objects.all()
     return render(request,'warehousedistribution.html',
                   {'distribution_list': distribution_list})
+
+def charts(request):
+        # Query for bar chart (total quantity delivered over time)
+    deliveries = DeliveryofPacked.objects.values('transport_date').annotate(total_quantity=Sum('quantity')).order_by('transport_date')
+
+    bar_chart_data = {
+        'labels': [str(delivery['transport_date']) for delivery in deliveries],
+        'values': [delivery['total_quantity'] for delivery in deliveries],
+    }
+
+    # Query for pie chart (quantity delivered by material type)
+    material_data = DeliveryofPacked.objects.values('barcode__material').annotate(total_quantity=Sum('quantity')).order_by('-total_quantity')
+
+    pie_chart_data = {
+        'labels': [item['barcode__material'] for item in material_data],
+        'values': [item['total_quantity'] for item in material_data],
+    }
+
+    # Query for line chart (total cost over time)
+    cost_data = DeliveryofPacked.objects.values('transport_date').annotate(total_cost=Sum('cost')).order_by('transport_date')
+
+    line_chart_data = {
+        'labels': [str(item['transport_date']) for item in cost_data],
+        'values': [item['total_cost'] for item in cost_data],
+    }
+
+    return render(request, 'charts.html', {
+        'bar_chart_data': bar_chart_data,
+        'pie_chart_data': pie_chart_data,
+        'line_chart_data': line_chart_data,
+    })
+
 
 def homepage(request):
     return render(request,'bg.html')
