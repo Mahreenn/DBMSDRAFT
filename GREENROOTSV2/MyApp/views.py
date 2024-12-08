@@ -28,6 +28,14 @@ def add_delP(request):    #for c in CRUD
             submitted = True
     return render(request, 'add_delP.html',{'form':form,'submitted':submitted})
 
+def update_delP(request,pk):
+    delp = DeliveryofPacked.objects.get(id=pk)
+    form =delPForm(instance=delp)
+    context = {'form':form}
+    return render(request,'add_delP.html',context)
+    
+
+
 def WMDash(request):
     packeddel_list_ = DeliveryofPacked.objects.all()
     return render(request,'warehousemanagerDashboard.html',
@@ -71,6 +79,7 @@ def charts(request):
 
 def QC(request):
     return render(request,'qualityControl.html')
+
 
 def homepage(request):
     return render(request,'bg.html')

@@ -11,4 +11,5 @@ urlpatterns = [
     path('warehousedistribution.html', views.distrib, name='distrib'),
     path('charts.html', views.charts, name='charts'),
     path('qualityControl.html', views.QC, name='qualitycontrol'),
+    path('update-delivery/<int:pk>/', views.update_delP, name='update-delP'),
 ]
