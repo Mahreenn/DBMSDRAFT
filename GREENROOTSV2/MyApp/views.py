@@ -69,6 +69,8 @@ def charts(request):
         'line_chart_data': line_chart_data,
     })
 
+def QC(request):
+    return render(request,'qualityControl.html')
 
 def homepage(request):
     return render(request,'bg.html')

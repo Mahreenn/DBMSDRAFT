@@ -10,4 +10,5 @@ urlpatterns = [
     path('warehousemanagerDashboard.html', views.WMDash, name='WM'),
     path('warehousedistribution.html', views.distrib, name='distrib'),
     path('charts.html', views.charts, name='charts'),
+    path('qualityControl.html', views.QC, name='qualitycontrol'),
 ]
