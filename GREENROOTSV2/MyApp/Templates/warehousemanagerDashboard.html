@@ -95,7 +95,7 @@
         <td>transport_date: {{ p.transport_date }}</td>
         <td>cost: {{ p.cost }}</td>
         <td>quantity: {{ p.quantity }}</td>
-        <td><a class ="btn btn-sm btn-info" href="add_delP.html"> Update </a></td>
+        <td><a class ="btn btn-sm btn-info" href="{% url 'update-delP' p.delivery_id %}"> Update </a></td>
         <td><a class ="btn btn-sm btn-danger" href="#"> Delete </a></td>
       </tr>
     

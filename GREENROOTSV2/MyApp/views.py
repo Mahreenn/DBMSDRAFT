@@ -3,6 +3,7 @@ from .modelsdel import Retailer,DeliveryofPacked,WarehouseDistribution,PackedPro
 from .forms import delPForm
 from django.http import HttpResponseRedirect
 from django.db.models import Sum
+from django.urls import reverse
 
 # Create your views here.
 def all_retailer(request):
@@ -29,17 +30,23 @@ def add_delP(request):    #for c in CRUD
     return render(request, 'add_delP.html',{'form':form,'submitted':submitted})
 
 def update_delP(request,pk):
-    delp = DeliveryofPacked.objects.get(id=pk)
+    delp = DeliveryofPacked.objects.get(delivery_id=pk)
     form =delPForm(instance=delp)
+
+    if request.method == 'POST':
+        form= delPForm(request.POST, instance=delp)
+        if form.is_valid():
+            form.save()
+            return  HttpResponseRedirect(reverse('WM') + '?submitted=True')
     context = {'form':form}
     return render(request,'add_delP.html',context)
     
 
-
 def WMDash(request):
-    packeddel_list_ = DeliveryofPacked.objects.all()
-    return render(request,'warehousemanagerDashboard.html',
-                  {'packeddel_list': packeddel_list_})
+    packeddel_list = DeliveryofPacked.objects.all()  # Ensure this query returns data as expected
+    print(packeddel_list)  # Debugging print statement
+    context = {'packeddel_list': packeddel_list}
+    return render(request, 'warehousemanagerDashboard.html', context)
 
 def distrib(request):
     distribution_list =  WarehouseDistribution.objects.all()
