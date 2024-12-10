@@ -5,10 +5,12 @@ from django.http import HttpResponseRedirect
 from django.db.models import Sum
 from django.urls import reverse
 
-from .querries import create_all_tables
+from .querries import create_all_tables,insert1,insert2
 
-
+insert2()
+insert1()
 create_all_tables()
+
 
 def all_retailer(request):
     ret_list = Retailer.objects.all()
