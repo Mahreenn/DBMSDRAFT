@@ -48,7 +48,6 @@ class WarehouseCert(models.Model):
             models.UniqueConstraint(fields=['name_of_certification', 'date_received'], name='unique_certification_date')
         ]
 
-
 class Vehicle(models.Model):
     vehicle_id = models.AutoField(primary_key=True)
     registration_plate_no = models.CharField(max_length=15, unique=True)

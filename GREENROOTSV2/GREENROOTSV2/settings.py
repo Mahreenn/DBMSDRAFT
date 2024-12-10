@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'GREENROOTSV2.wsgi.application'
 
 DATABASES = {
     'default': {
-         'ENGINE': 'django.db.backends.mysql',  
+        'ENGINE': 'django.db.backends.mysql',  
         'NAME': 'groots',  
         'USER': 'root',  
         'PASSWORD': '1234',  
