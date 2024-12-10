@@ -99,17 +99,6 @@ class PackingFacility(models.Model):
     def __str__(self):
         return f"{self.name} located at {self.street}, {self.area} (Capacity: {self.capacity})"
 
-class FacilityCertification(models.Model):
-    certification_id = models.AutoField(primary_key=True)
-    certification_name = models.CharField(max_length=255)
-    expiry_date = models.DateField()
-    facility = models.ForeignKey(PackingFacility, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('certification_name', 'facility','expiry_date') 
-    
-    def __str__(self):
-        return f"Certification: {self.certification_name} (Expires: {self.expiry_date})"
 
 class DeliveryHarvested(models.Model):
     delivery_id = models.AutoField(primary_key=True)

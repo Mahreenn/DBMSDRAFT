@@ -5,12 +5,11 @@ from django.http import HttpResponseRedirect
 from django.db.models import Sum
 from django.urls import reverse
 
-from .querries import execute_raw_sql
+from .querries import create_all_tables
 
-# Example usage:
-execute_raw_sql()
 
-# Create your views here.
+create_all_tables()
+
 def all_retailer(request):
     ret_list = Retailer.objects.all()
     return render(request, 'retailerlist.html',
