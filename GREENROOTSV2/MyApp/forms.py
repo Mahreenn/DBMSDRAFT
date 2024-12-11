@@ -2,6 +2,8 @@ from django import forms
 from django.forms import ModelForm
 from .modelsdel import DeliveryofPacked
 from django.db import connection
+from django.core.exceptions import ValidationError
+
 
 class delPForm(ModelForm):
     class Meta:
@@ -43,5 +45,18 @@ class distribForm(forms.Form):
         self.fields['warehouse_id'].choices = warehouse_choices
 
 
+    def clean_delivery_id(self):
+        # Get the delivery_id entered by the user
+        delivery_id = self.cleaned_data.get('delivery_id')
 
-       
+        # Query the database to check if the delivery_id already exists
+        query = """SELECT id FROM warehouse_distribution WHERE id = %s"""
+        with connection.cursor() as cursor:
+            cursor.execute(query, [delivery_id])  # Use parameterized query to avoid SQL injection
+            rows = cursor.fetchall()
+
+        # If rows is not empty, the delivery_id already exists in the database
+        if rows:
+            raise ValidationError(f"Delivery ID {delivery_id} already exists in the warehouse distribution.")
+
+        return delivery_id

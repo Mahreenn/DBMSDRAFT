@@ -65,7 +65,7 @@ def distrib(request):
     with connection.cursor() as cursor:
         cursor.execute(query)
         rows = cursor.fetchall()
-#rows =  WarehouseDistribution.objects.all()
+
     return render(request,'warehousedistribution.html', {'rows': rows})
 
 def add_distrib(request):
