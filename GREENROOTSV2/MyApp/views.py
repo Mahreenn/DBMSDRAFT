@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from .modelsdel import Retailer,DeliveryofPacked,WarehouseDistribution,PackedProduce
 from .forms import delPForm,distribForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect,Http404
 from django.db.models import Sum
 from django.urls import reverse
 from django.db import connection
+from django.core.exceptions import ValidationError
 
 from .querries import create_all_tables,insert1,insert2
 
@@ -93,7 +94,19 @@ def add_distrib(request):
     return render(request, 'add_distrib.html',{'form':form,'submitted':submitted})
 
 
+def update_distrib(request, pk):
+    return render(request,'add_distrib.html')
 
+def delete_distrib(request, pk):
+   if request.method == 'POST':
+        query = "DELETE FROM warehouse_distribution WHERE id = %s;"
+        with connection.cursor() as cursor:
+            cursor.execute(query, [pk])
+            if cursor.rowcount == 0:
+                raise Http404("Record not found.")
+            
+        return HttpResponseRedirect(reverse('distrib'))  
+    
 
 def charts(request):
         # Query for bar chart (total quantity delivered over time)
