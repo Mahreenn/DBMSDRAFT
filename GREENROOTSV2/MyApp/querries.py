@@ -96,13 +96,6 @@ def create_all_tables():
             CONSTRAINT unique_certification_date UNIQUE (name_of_certification, date_received)
         );""",
 
-        """CREATE TABLE IF NOT EXISTS vehicle (
-            vehicle_id INT AUTO_INCREMENT PRIMARY KEY,
-            registration_plate_no VARCHAR(15) UNIQUE NOT NULL,
-            model VARCHAR(100) NOT NULL,
-            max_capacity FLOAT NOT NULL,
-            gps_tracking_number VARCHAR(50) UNIQUE NOT NULL
-        );""",
 
         """CREATE TABLE IF NOT EXISTS vehicle_gps_log (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -129,13 +122,16 @@ def create_all_tables():
             area VARCHAR(55) NOT NULL
         );""",
 
-        """CREATE TABLE IF NOT EXISTS logistics (
-            id INT AUTO_INCREMENT PRIMARY KEY,
+          """CREATE TABLE IF NOT EXISTS vehicle (
+            vehicle_id INT AUTO_INCREMENT PRIMARY KEY,
+            registration_plate_no VARCHAR(15) UNIQUE NOT NULL,
+            model VARCHAR(100) NOT NULL,
             company_name VARCHAR(255) NOT NULL,
-            vehicle_id INT NOT NULL,
+            max_capacity FLOAT NOT NULL,
             FOREIGN KEY (company_name) REFERENCES logistics_company(company_name) ON DELETE CASCADE,
-            FOREIGN KEY (vehicle_id) REFERENCES vehicle(vehicle_id) ON DELETE CASCADE
+            gps_tracking_number VARCHAR(50) UNIQUE NOT NULL
         );""",
+
 
         """CREATE TABLE IF NOT EXISTS packing_facility (
             facID SMALLINT PRIMARY KEY,
@@ -235,6 +231,20 @@ def create_all_tables():
 
 def insert1():
     insertwofk = [
+        """INSERT IGNORE INTO packed_produce (barcode, weight, material, cost_per_unit)
+        VALUES
+        ('B001', 10.5, 'Plastic', 15.25),
+        ('B002', 12.0, 'Glass', 20.50),
+        ('B003', 8.3, 'Plastic', 18.75),
+        ('B004', 15.0, 'Wood', 22.00),
+        ('B005', 7.5, 'Metal', 19.00),
+        ('B006', 10.0, 'Cardboard', 12.50),
+        ('B007', 11.0, 'Plastic', 16.00),
+        ('B008', 9.8, 'Glass', 21.00),
+        ('B009', 13.2, 'Metal', 17.50),
+        ('B010', 14.5, 'Wood', 23.00);
+        """,
+
         """INSERT IGNORE INTO warehouse (warehouseid, address) VALUES
         (1, 'New Eskaton Road, Dhaka'),
         (2, '123, Mirpur Road, Dhaka'),
@@ -409,7 +419,31 @@ def insert2():
         ('2023-07-22', '2023-11-12', 1400, 'Rough', 'Yellow', TRUE, 'Sunny', TRUE, 2, 2),
         ('2023-08-10', '2023-12-01', 2100, 'Smooth', 'Green', FALSE, 'Cloudy', FALSE, 3, 3),
         ('2023-09-15', '2024-01-10', 1900, 'Smooth', 'Red', FALSE, 'Rainy', TRUE, 4, 4),
-        ('2023-10-05', '2024-02-15', 1300, 'Rough', 'Yellow', TRUE, 'Sunny', FALSE, 5, 5);"""
+        ('2023-10-05', '2024-02-15', 1300, 'Rough', 'Yellow', TRUE, 'Sunny', FALSE, 5, 5);""",
+
+        """INSERT INTO delivery_harvested (transport_date, quantity, temperature, humidity, cost, facility_id, vehicle_id, batch_id)
+        VALUES
+        ('2024-12-01', 150.0, 20.5, 80.0, 250.00, 1, 1, 1),
+        ('2024-12-02', 180.0, 22.0, 85.0, 270.00, 2, 2, 2),
+        ('2024-12-03', 200.0, 21.0, 82.0, 290.00, 3, 3, 3),
+        ('2024-12-04', 170.0, 19.0, 78.0, 260.00, 4, 4, 4),
+        ('2024-12-05', 160.0, 23.0, 79.0, 280.00, 5, 5, 4),
+        ('2024-12-06', 190.0, 18.5, 81.0, 300.00, 5, 6, 6),
+        ('2024-12-07', 210.0, 20.0, 83.0, 310.00, 1, 2, 7),
+        ('2024-12-08', 175.0, 22.5, 80.0, 275.00, 2, 3, 8),
+        ('2024-12-09', 185.0, 21.5, 79.5, 285.00, 3, 4, 4),
+        ('2024-12-10', 195.0, 24.0, 84.0, 320.00, 4, 5, 9),
+        ('2024-12-11', 205.0, 19.5, 77.0, 295.00, 5, 6, 1),
+        ('2024-12-12', 215.0, 22.0, 86.0, 330.00, 2, 1, 1),
+        ('2024-12-13', 220.0, 23.5, 80.5, 340.00, 1, 2, 7),
+        ('2024-12-14', 230.0, 21.0, 79.0, 350.00, 2, 3, 6),
+        ('2024-12-15', 240.0, 20.0, 78.0, 360.00, 3, 4, 6),
+        ('2024-12-16', 250.0, 19.0, 81.0, 370.00, 4, 5, 6),
+        ('2024-12-17', 260.0, 22.5, 82.5, 380.00, 5, 6, 7),
+        ('2024-12-18', 270.0, 23.0, 84.0, 390.00, 5, 1, 8),
+        ('2024-12-19', 280.0, 21.5, 85.0, 400.00, 1, 2, 9),
+        ('2024-12-20', 290.0, 20.5, 83.0, 410.00, 2, 3, 1);
+        """
 
 
     ]

@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from .modelsdel import Retailer,DeliveryofPacked,WarehouseDistribution,PackedProduce
-from .forms import delPForm
+from .forms import delPForm,distribForm
 from django.http import HttpResponseRedirect
 from django.db.models import Sum
 from django.urls import reverse
+from django.db import connection
 
 from .querries import create_all_tables,insert1,insert2
 
@@ -17,7 +18,7 @@ def all_retailer(request):
     return render(request, 'retailerlist.html',
                   {'ret_list': ret_list})
 
-def deliveryP(request):  # for reading in CRUD
+def deliveryP(request):  # for r in CRUD
     packeddel_list = DeliveryofPacked.objects.all()
     return render(request, 'deliveriesP.html',
                   {'packeddel_list': packeddel_list})
@@ -49,15 +50,50 @@ def update_delP(request,pk):
     
 
 def WMDash(request):
-    packeddel_list = DeliveryofPacked.objects.all()  # Ensure this query returns data as expected
-    print(packeddel_list)  # Debugging print statement
+    packeddel_list = DeliveryofPacked.objects.all()  
+    print(packeddel_list) 
     context = {'packeddel_list': packeddel_list}
     return render(request, 'warehousemanagerDashboard.html', context)
 
+
 def distrib(request):
-    distribution_list =  WarehouseDistribution.objects.all()
-    return render(request,'warehousedistribution.html',
-                  {'distribution_list': distribution_list})
+    query = """
+        SELECT wd.id, wd.date, wd.warehouseid, wd.supname, w.address AS warehouse_address
+        FROM warehouse_distribution AS wd
+        JOIN warehouse AS w ON wd.warehouseid = w.warehouseid;
+        """
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+#rows =  WarehouseDistribution.objects.all()
+    return render(request,'warehousedistribution.html', {'rows': rows})
+
+def add_distrib(request):
+    submitted = False
+    if request.method == "POST":
+        form = distribForm(request.POST)
+        if form.is_valid():
+            field1 = form.cleaned_data['delivery_id']
+            field2 = form.cleaned_data['delivery_date']
+            field3 = form.cleaned_data['warehouse_id']
+            field4 = form.cleaned_data['supplier_name']
+            
+
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO warehouse_distribution (id, date, warehouseid,supname)
+                    VALUES (%s, %s, %s, %s)
+                """, [field1, field2, field3, field4])
+            
+            return HttpResponseRedirect('warehousedistribution.html?submitted=True')
+    else:
+        form = distribForm
+        if 'submitted' in request.GET:
+            submitted = True
+    return render(request, 'add_distrib.html',{'form':form,'submitted':submitted})
+
+
+
 
 def charts(request):
         # Query for bar chart (total quantity delivered over time)

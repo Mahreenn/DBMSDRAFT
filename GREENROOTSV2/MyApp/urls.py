@@ -9,6 +9,7 @@ urlpatterns = [
     path('add_delP.html', views.add_delP, name='add-delP'),
     path('warehousemanagerDashboard.html', views.WMDash, name='WM'),
     path('warehousedistribution.html', views.distrib, name='distrib'),
+    path('add_distrib.html', views.add_distrib, name='adddistrib'),
     path('charts.html', views.charts, name='charts'),
     path('qualityControl.html', views.QC, name='qualitycontrol'),
     path('update-delivery/<int:pk>/', views.update_delP, name='update-delP'),
