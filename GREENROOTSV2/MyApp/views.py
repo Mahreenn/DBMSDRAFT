@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .modelsdel import Retailer,DeliveryofPacked,WarehouseDistribution,PackedProduce
-from .forms import delPForm,distribForm
+from .forms import delPForm,distribForm,productVisualForm
 from django.http import HttpResponseRedirect,Http404
 from django.db.models import Sum
 from django.urls import reverse
@@ -106,9 +106,18 @@ def delete_distrib(request, pk):
                 raise Http404("Record not found.")
             
         return HttpResponseRedirect(reverse('distrib'))  
+   
+
+    
     
 
 def charts(request):
+    submitted = False
+    if request.method == "POST":
+        form = productVisualForm(request.POST)
+        if form.is_valid():
+            brc = form.cleaned_data['Barcode']
+
         # Query for bar chart (total quantity delivered over time)
     deliveries = DeliveryofPacked.objects.values('transport_date').annotate(total_quantity=Sum('quantity')).order_by('transport_date')
 
@@ -137,11 +146,13 @@ def charts(request):
         'bar_chart_data': bar_chart_data,
         'pie_chart_data': pie_chart_data,
         'line_chart_data': line_chart_data,
-    })
+        'form':form,'submitted':submitted,
+    }, )
+
+
 
 def QC(request):
     return render(request,'qualityControl.html')
-
 
 def homepage(request):
     return render(request,'bg.html')

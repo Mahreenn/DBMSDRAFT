@@ -28,7 +28,6 @@ class distribForm(forms.Form):
 
         supplier_choices = [('', 'Choose a supplier')] + [(row[0], row[0]) for row in rows]
 
-        # Set the choices for the supplier_name field
         self.fields['supplier_name'].choices = supplier_choices
 
 
@@ -41,7 +40,6 @@ class distribForm(forms.Form):
 
         warehouse_choices = [('', 'Choose warehouse ID')] + [(row[0], row[0]) for row in rows]
 
-        # Set the choices for the supplier_name field
         self.fields['warehouse_id'].choices = warehouse_choices
 
 
@@ -55,8 +53,25 @@ class distribForm(forms.Form):
             cursor.execute(query, [delivery_id])  # Use parameterized query to avoid SQL injection
             rows = cursor.fetchall()
 
-        # If rows is not empty, the delivery_id already exists in the database
+  
         if rows:
             raise ValidationError(f"Delivery ID {delivery_id} already exists in the warehouse distribution.")
 
         return delivery_id
+    
+class productVisualForm(forms.Form):
+    Barcode = forms.ChoiceField(label="Barcode", required=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+   
+
+        query = """SELECT barcode
+                  FROM packed_produce;"""
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            rows = cursor.fetchall()
+
+        Barcode_choices = [('', 'Choose a product Barcode:')] + [(row[0], row[0]) for row in rows]
+
+        self.fields['Barcode'].choices = Barcode_choices

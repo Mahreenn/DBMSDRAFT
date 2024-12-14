@@ -9,17 +9,16 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between; /* Space out the charts */
-            gap: 20px; /* Add space between charts */
+            gap: 40px; /* Add space between charts */
             padding: 20px;
         }
         .chart-item {
-            flex: 1 1 30%; /* Adjust the width to 30% of the container */
+            flex: 1 1 40%; /* Adjust the width to 30% of the container */
             min-width: 300px; /* Set a minimum width */
         }
         canvas {
             width: 100%; /* Make the canvas take up the full width of the container */
         }
-
 
 
 .navigation-buttons {
@@ -33,9 +32,6 @@ text-decoration: none;
 color: white;
 font-weight: bold;
 }
-
-
-
 
 .stats-container {
 display: flex;
@@ -84,7 +80,7 @@ justify-content: center;
         </div>
         </div>
         </nav>
-    <h1>Delivery Charts</h1>
+    <h1> Overview </h1>
     <div class="chart-container">
         <!-- Bar Chart -->
         <div class="chart-item">
@@ -199,6 +195,21 @@ justify-content: center;
                 }
             }
         });
+
+        
     </script>
+    <div class="container-fluid py-5 text-center">
+        <h1>Choose A Product Barcode </h1>
+        <br/><br/>
+        {% if submitted %}
+           The new record was added to database succesfully
+        {% else %}
+            <form action="" method=POST>
+                {% csrf_token %}
+                 {{ form.as_p }}
+                 <input type="submit" value="Submit" class="btn btn-secondary">
+            </form>
+        {% endif %}
+      </div>
 </body>
 </html>

@@ -301,6 +301,20 @@ def insert1():
 
 def insert2():
     insertwfk = [
+
+        """INSERT IGNORE INTO nutrition_content_report (fat_content, sugar_content, vitamin_content, mineral_content, nutritionist_id, barcode)
+        VALUES
+        (5.2, 3.1, 7.8, 12.5, 1, 'B001'),
+        (4.5, 2.7, 6.9, 9.2, 2, 'B002'),
+        (3.4, 4.0, 8.3, 10.1, 3, 'B003'),
+        (6.1, 1.5, 9.0, 15.0, 4, 'B004'),
+        (2.9, 3.5, 7.2, 8.8, 5, 'B005'),
+        (4.8, 2.9, 7.5, 11.4, 1, 'B006'),
+        (5.3, 3.3, 6.4, 13.2, 2, 'B007'),
+        (4.2, 3.8, 8.1, 9.6, 3, 'B008'),
+        (6.0, 2.6, 7.0, 14.3, 4, 'B009'),
+        (3.5, 4.1, 7.3, 12.7, 5, 'B010');
+        """,
               
         """INSERT IGNORE  INTO warehouse_distribution (date, warehouseid, supname) VALUES
         ('2024-01-01', 1, 'Aftab Foods Ltd.'),

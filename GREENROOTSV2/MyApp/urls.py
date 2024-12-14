@@ -7,6 +7,7 @@ urlpatterns = [
     path('index.html', views.index, name='index'),
     path('deliveriesP', views.deliveryP, name='delP'),  #want this to show on warehousemanager homepage
     path('add_delP.html', views.add_delP, name='add-delP'),
+    path('update-delivery/<int:pk>/', views.update_delP, name='update-delP'),
     path('warehousemanagerDashboard.html', views.WMDash, name='WM'),
     path('warehousedistribution.html', views.distrib, name='distrib'),
     path('add_distrib.html', views.add_distrib, name='adddistrib'),
@@ -14,5 +15,5 @@ urlpatterns = [
     path('dlt-distribution/<int:pk>/', views.delete_distrib, name='delete-distrib'),
     path('charts.html', views.charts, name='charts'),
     path('qualityControl.html', views.QC, name='qualitycontrol'),
-    path('update-delivery/<int:pk>/', views.update_delP, name='update-delP'),
+    
 ]
