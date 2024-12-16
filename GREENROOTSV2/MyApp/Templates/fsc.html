@@ -5,6 +5,38 @@
              {{ form.as_p }}
              <input type="submit" value="Submit" class="btn btn-secondary">
         </form>
+        {% if results %}
+            <h2>Batch Journey Details</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Farm Address</th>
+                        <th>Packing Facility</th>
+                        <th>Warehouse Address</th>
+                        <th>Supplied To</th>
+                        <th>Vehicle Company Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                        <tr>
+                            <td>{{ result.0 }}</td>
+                            <td>{{ result.1 }}</td>
+                            <td>{{ result.2 }}</td>
+                            <td>{{ result.3 }}</td>
+                            <td>{{ result.4 }}</td>
+                            <td>{{ result.5 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5"><b>Total Trackings: {{ results|length }}</b></td>
+                    </tr>
+                </tfoot>
+            </table>
+        {% endif %}
    
     
         {% endblock %}

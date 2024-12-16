@@ -59,4 +59,18 @@ class productVisualForm(forms.Form):
         self.fields['Barcode'].choices = Barcode_choices
 
 class fscform(forms.Form):
-    product = forms.ChoiceField(label="Barcode", required=True)
+    batchID = forms.ChoiceField(label="Choose a harvest Batch ID to track its journey through the supply chain:", required=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+   
+
+        query = """SELECT batch_id
+                  FROM harvested_produce;"""
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            rows = cursor.fetchall()
+
+        batches = [('', 'batch ID:')] + [(row[0], row[0]) for row in rows]
+
+        self.fields['batchID'].choices = batches

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .modelsdel import Retailer,DeliveryofPacked,WarehouseDistribution,PackedProduce
-from .forms import delPForm,distribForm,productVisualForm
+from .forms import delPForm,distribForm,productVisualForm,fscform
 from django.http import HttpResponseRedirect,Http404
 from django.db.models import Sum
 from django.urls import reverse
@@ -103,7 +103,6 @@ def add_distrib(request):
 
 
 def update_distrib(request, pk):
-        # Fetch the current distribution data using raw SQL
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM warehouse_distribution WHERE id = %s", [pk])
         row = cursor.fetchone()
@@ -112,21 +111,18 @@ def update_distrib(request, pk):
         raise Http404("Distribution record not found.")
 
     initial_data = {
-        # 'delivery_id': row[0],  # No need to include `delivery_id` as it is auto-incremented
-        'warehouse_id': row[2],  # Assuming warehouse_id is at index 2 (adjust as necessary)
-        'supplier_name': row[3],  # Assuming supplier_name is at index 3
-        'delivery_date': row[1],  # Assuming delivery_date is at index 1
+        'warehouse_id': row[2],  
+        'supplier_name': row[3], 
+        'delivery_date': row[1],  
     }
 
     form = distribForm(request.POST or None, initial=initial_data)
 
     if request.method == 'POST' and form.is_valid():
-        # If the form is submitted and valid, update the record in the database
         warehouse_id = form.cleaned_data['warehouse_id']
         supplier_name = form.cleaned_data['supplier_name']
         delivery_date = form.cleaned_data['delivery_date']
 
-        # Update the record using raw SQL (No need to update `id` since it's auto-incremented)
         with connection.cursor() as cursor:
             cursor.execute("""
                 UPDATE warehouse_distribution
@@ -193,7 +189,55 @@ def charts(request):
 
 
 def FSC(request):
-    return render(request,'fsc.html')
+    results = None 
+    if request.method == 'POST':
+        form = fscform(request.POST)
+        if form.is_valid():
+            selected_batch_id = form.cleaned_data['batchID']
+            
+            # If a valid batch ID is selected
+            if selected_batch_id:
+                query = """
+                SELECT 
+                    p.product_Name AS product_name,
+                    f.address AS farm_address,
+                    pf.name AS packing_facility_name,
+                    w.address AS warehouse_address,
+                    wd.supname AS Supplied_To,
+                    v.company_name
+                FROM 
+                    farm_production fp
+                JOIN 
+                    harvested_produce hp ON fp.batch_id = hp.batch_id
+                JOIN 
+                    farm f ON fp.registration_id = f.registration_id
+                JOIN 
+                    product p ON hp.produceID = p.product_ID
+                JOIN
+                    delivery_harvested dh ON dh.batch_id = hp.batch_id
+                JOIN 
+                    packing_facility pf ON pf.facID = dh.facility_id
+                JOIN 
+                    packed_produce pp ON pp.facilityID = pf.facID
+                JOIN 
+                    delivery_of_packed dp ON dp.barcode = pp.barcode
+                JOIN 
+                    warehouse w ON w.warehouseid = dp.warehouse_id
+                JOIN 
+                    warehouse_distribution wd ON wd.warehouseid = w.warehouseid
+                JOIN 
+                    vehicle v ON v.vehicle_id = dp.vehicle_id
+                WHERE fp.batch_id = %s;
+                """
+                
+                with connection.cursor() as cursor:
+                    cursor.execute(query, [selected_batch_id])
+                    results = cursor.fetchall()
+
+    else:
+        form = fscform()  
+
+    return render(request, 'fsc.html', {'form': form, 'results': results})
 
 
 def QC(request):
