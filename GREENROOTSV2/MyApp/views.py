@@ -61,20 +61,28 @@ def distrib(request):
     query = """
         SELECT wd.id, wd.date, wd.warehouseid, wd.supname, w.address AS warehouse_address
         FROM warehouse_distribution AS wd
-        JOIN warehouse AS w ON wd.warehouseid = w.warehouseid;
+        JOIN warehouse AS w ON wd.warehouseid = w.warehouseid
         """
+    sort_by_date_str = request.GET.get('sort_by_date', 'false').lower()
+    sort_by_date = sort_by_date_str == 'true'
+    
+    #sort_by_date = request.GET.get('sort_by_date', 'false').lower() == 'true'
+    if sort_by_date:
+        query += " ORDER BY wd.date DESC"
+
     with connection.cursor() as cursor:
         cursor.execute(query)
         rows = cursor.fetchall()
-
-    return render(request,'warehousedistribution.html', {'rows': rows})
+    
+    print("Fetched rows:", rows)
+    return render(request, 'warehousedistribution.html', {'rows': rows, 'sort_by_date': sort_by_date})
 
 def add_distrib(request):
     submitted = False
     if request.method == "POST":
         form = distribForm(request.POST)
         if form.is_valid():
-            field1 = form.cleaned_data['delivery_id']
+           # field1 = form.cleaned_data['delivery_id']
             field2 = form.cleaned_data['delivery_date']
             field3 = form.cleaned_data['warehouse_id']
             field4 = form.cleaned_data['supplier_name']
@@ -82,9 +90,9 @@ def add_distrib(request):
 
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    INSERT INTO warehouse_distribution (id, date, warehouseid,supname)
-                    VALUES (%s, %s, %s, %s)
-                """, [field1, field2, field3, field4])
+                    INSERT INTO warehouse_distribution (date, warehouseid,supname)
+                    VALUES ( %s, %s, %s)
+                """, [ field2, field3, field4])
             
             return HttpResponseRedirect('warehousedistribution.html?submitted=True')
     else:
@@ -95,7 +103,42 @@ def add_distrib(request):
 
 
 def update_distrib(request, pk):
-    return render(request,'add_distrib.html')
+        # Fetch the current distribution data using raw SQL
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM warehouse_distribution WHERE id = %s", [pk])
+        row = cursor.fetchone()
+
+    if not row:
+        raise Http404("Distribution record not found.")
+
+    initial_data = {
+        # 'delivery_id': row[0],  # No need to include `delivery_id` as it is auto-incremented
+        'warehouse_id': row[2],  # Assuming warehouse_id is at index 2 (adjust as necessary)
+        'supplier_name': row[3],  # Assuming supplier_name is at index 3
+        'delivery_date': row[1],  # Assuming delivery_date is at index 1
+    }
+
+    form = distribForm(request.POST or None, initial=initial_data)
+
+    if request.method == 'POST' and form.is_valid():
+        # If the form is submitted and valid, update the record in the database
+        warehouse_id = form.cleaned_data['warehouse_id']
+        supplier_name = form.cleaned_data['supplier_name']
+        delivery_date = form.cleaned_data['delivery_date']
+
+        # Update the record using raw SQL (No need to update `id` since it's auto-incremented)
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                UPDATE warehouse_distribution
+                SET warehouseid = %s, supname = %s, delivery_date = %s
+                WHERE id = %s
+            """, [warehouse_id, supplier_name, delivery_date, pk]) 
+
+        # Redirect to the page where the updated distribution is displayed (change the URL as needed)
+        return HttpResponseRedirect(f'warehousedistribution/{pk}/')
+
+    # Render the form if the method is GET or if there are errors in the form
+    return render(request, 'add_distrib.html', {'form': form})
 
 def delete_distrib(request, pk):
    if request.method == 'POST':

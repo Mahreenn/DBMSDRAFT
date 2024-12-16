@@ -20,9 +20,8 @@ def create_all_tables():
             supname VARCHAR(65),
             FOREIGN KEY (warehouseid) REFERENCES warehouse(warehouseid),
             FOREIGN KEY (supname) REFERENCES supplier(name),
-            UNIQUE (warehouseid, supname, date)
+            UNIQUE (id, warehouseid, supname, date)
         );""",
-
 
         """CREATE TABLE IF NOT EXISTS product (
             product_ID INT AUTO_INCREMENT PRIMARY KEY,

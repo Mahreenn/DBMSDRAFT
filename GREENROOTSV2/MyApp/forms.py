@@ -11,7 +11,7 @@ class delPForm(ModelForm):
         fields = "__all__"             #('transport_date','temperature','cost','quantity','barcode', 'warehouseid','vehicleid')  
 
 class distribForm(forms.Form):
-    delivery_id = forms.IntegerField(label="Delivery ID", required=True)
+    #delivery_id = forms.IntegerField(label="Delivery ID", required=True)
     warehouse_id = forms.ChoiceField(label="Warehouse ID", required=True)
     supplier_name = forms.ChoiceField(label="Supplier Name", required=True)
     delivery_date = forms.DateField(label="Delivery Date", widget=forms.SelectDateWidget(years=range(2016, 2025)))
@@ -30,8 +30,6 @@ class distribForm(forms.Form):
 
         self.fields['supplier_name'].choices = supplier_choices
 
-
-
         q1 = """SELECT warehouseid
                   FROM warehouse;"""
         with connection.cursor() as cursor:
@@ -42,22 +40,6 @@ class distribForm(forms.Form):
 
         self.fields['warehouse_id'].choices = warehouse_choices
 
-
-    def clean_delivery_id(self):
-        # Get the delivery_id entered by the user
-        delivery_id = self.cleaned_data.get('delivery_id')
-
-        # Query the database to check if the delivery_id already exists
-        query = """SELECT id FROM warehouse_distribution WHERE id = %s"""
-        with connection.cursor() as cursor:
-            cursor.execute(query, [delivery_id])  # Use parameterized query to avoid SQL injection
-            rows = cursor.fetchall()
-
-  
-        if rows:
-            raise ValidationError(f"Delivery ID {delivery_id} already exists in the warehouse distribution.")
-
-        return delivery_id
     
 class productVisualForm(forms.Form):
     Barcode = forms.ChoiceField(label="Barcode", required=True)
