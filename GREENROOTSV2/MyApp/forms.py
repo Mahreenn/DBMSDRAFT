@@ -57,3 +57,6 @@ class productVisualForm(forms.Form):
         Barcode_choices = [('', 'Choose a product Barcode:')] + [(row[0], row[0]) for row in rows]
 
         self.fields['Barcode'].choices = Barcode_choices
+
+class fscform(forms.Form):
+    product = forms.ChoiceField(label="Barcode", required=True)

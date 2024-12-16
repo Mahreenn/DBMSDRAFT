@@ -15,5 +15,6 @@ urlpatterns = [
     path('dlt-distribution/<int:pk>/', views.delete_distrib, name='delete-distrib'),
     path('charts.html', views.charts, name='charts'),
     path('qualityControl.html', views.QC, name='qualitycontrol'),
+    path('fsc.html', views.FSC, name='foodsupplychain'),
     
 ]

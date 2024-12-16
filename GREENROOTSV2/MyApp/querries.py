@@ -25,7 +25,7 @@ def create_all_tables():
 
         """CREATE TABLE IF NOT EXISTS product (
             product_ID INT AUTO_INCREMENT PRIMARY KEY,
-            product_Name VARCHAR(55) NOT NULL,
+            product_Name VARCHAR(55) NOT NULL UNIQUE,
             product_Type VARCHAR(20) NOT NULL
         );""",
 
@@ -147,7 +147,8 @@ def create_all_tables():
             facID SMALLINT NOT NULL,
             FOREIGN KEY (facID) REFERENCES packing_facility(facID) ON DELETE CASCADE,
             CONSTRAINT unique_certification_name_facility_expiry UNIQUE (certification_name, facID, expiry_date)
-        );"""
+        );""",
+        
         """CREATE TABLE IF NOT EXISTS delivery_harvested (
             delivery_id INT AUTO_INCREMENT PRIMARY KEY,
             transport_date DATE NOT NULL,

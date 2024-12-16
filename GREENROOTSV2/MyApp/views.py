@@ -9,9 +9,9 @@ from django.core.exceptions import ValidationError
 
 from .querries import create_all_tables,insert1,insert2
 
-insert2()
-insert1()
-create_all_tables()
+#insert2()
+#insert1()
+#create_all_tables()
 
 
 def all_retailer(request):
@@ -189,6 +189,11 @@ def charts(request):
         'line_chart_data': line_chart_data,
         'form':form,'submitted':submitted,
     }, )
+
+
+
+def FSC(request):
+    return render(request,'fsc.html')
 
 
 def QC(request):
