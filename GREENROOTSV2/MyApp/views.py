@@ -107,14 +107,12 @@ def delete_distrib(request, pk):
             
         return HttpResponseRedirect(reverse('distrib'))  
    
-
-    
     
 
 def charts(request):
     submitted = False
-    if request.method == "POST":
-        form = productVisualForm(request.POST)
+    form = productVisualForm(request.POST)
+    if request.method == "POST":     
         if form.is_valid():
             brc = form.cleaned_data['Barcode']
 
@@ -148,7 +146,6 @@ def charts(request):
         'line_chart_data': line_chart_data,
         'form':form,'submitted':submitted,
     }, )
-
 
 
 def QC(request):
