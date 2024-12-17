@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .modelsdel import Retailer,DeliveryofPacked,WarehouseDistribution,PackedProduce
-from .forms import delPForm,distribForm,productVisualForm,fscform
+from .forms import delPForm,distribForm,productVisualForm,fscform,gradingform
 from django.http import HttpResponseRedirect,Http404
 from django.db.models import Sum
 from django.urls import reverse
@@ -195,7 +195,6 @@ def FSC(request):
         if form.is_valid():
             selected_batch_id = form.cleaned_data['batchID']
             
-            # If a valid batch ID is selected
             if selected_batch_id:
                 query = """
                 SELECT 
@@ -241,7 +240,8 @@ def FSC(request):
 
 
 def QC(request):
-    return render(request,'qualityControl.html')
+    form = gradingform
+    return render(request,'qualityControl.html',{'form' : form})
 
 def homepage(request):
     return render(request,'bg.html')

@@ -112,7 +112,7 @@ def create_all_tables():
     latitude FLOAT NOT NULL,
     longitude FLOAT NOT NULL,
     FOREIGN KEY (gps_log_id) REFERENCES vehicle_gps_log(id)
-);""",
+        );""",
 
 
         """CREATE TABLE IF NOT EXISTS logistics_company (
