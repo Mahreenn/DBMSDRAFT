@@ -1,6 +1,24 @@
 <html>
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        .d-flex a {
+        margin-right: 10px; /* Adds space between the buttons */
+    }
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between; /* Space out the charts */
+            gap: 40px; /* Add space between charts */
+            padding: 20px;
+        }
+        .chart-item {
+            flex: 1 1 40%; /* Adjust the width to 30% of the container */
+            min-width: 300px; /* Set a minimum width */
+        }
+        canvas {
+            width: 100%; /* Make the canvas take up the full width of the container */
+        }
     
         .navbar-brand b {
             font-weight: bold;
@@ -48,13 +66,10 @@
                         <a class="nav-link" href="qualityControl.html">Quality Control</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="warehousedistribution.html">Warehouse Distribution Records</a>
+                        <a class="nav-link" href="warehousedistribution.html"> Distribution Records</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Logistics Details</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="warehousemanagerDashboard.html">Homepage</a>
+                        <a class="nav-link" href="warehousemanagerDashboard.html">Delivery records</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="charts.html">Dashboard</a>

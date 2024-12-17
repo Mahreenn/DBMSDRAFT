@@ -57,7 +57,7 @@ def create_all_tables():
             sowing_date DATE NOT NULL,
             harvest_date DATE NOT NULL,
             weight FLOAT NOT NULL,
-            smoothness VARCHAR(50) NOT NULL,
+            texture VARCHAR(50) NOT NULL,
             colour VARCHAR(50) NOT NULL,
             fungal_growth BOOLEAN NOT NULL,
             weather_conditions VARCHAR(255) NOT NULL,

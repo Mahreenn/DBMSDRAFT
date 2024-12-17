@@ -144,47 +144,35 @@ def delete_distrib(request, pk):
             if cursor.rowcount == 0:
                 raise Http404("Record not found.")
             
-        return HttpResponseRedirect(reverse('distrib'))  
-   
+        return HttpResponseRedirect(reverse('distrib'))   
     
 
 def charts(request):
-    submitted = False
-    form = productVisualForm(request.POST)
-    if request.method == "POST":     
-        if form.is_valid():
-            prod = form.cleaned_data['product_Name']
+    form = productVisualForm()
+    submitted = False  
+    selected_product = None  
 
-        # Query for bar chart (total quantity delivered over time)
-    deliveries = DeliveryofPacked.objects.values('transport_date').annotate(total_quantity=Sum('quantity')).order_by('transport_date')
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('''
+                SELECT grade, COUNT(*) AS grade_count
+                FROM harvested_produce
+                GROUP BY grade;
+            ''')
+            result = cursor.fetchall()
+    except Exception as e:
+        result = []  
 
-    bar_chart_data = {
-        'labels': [str(delivery['transport_date']) for delivery in deliveries],
-        'values': [delivery['total_quantity'] for delivery in deliveries],
-    }
-
-    # Query for pie chart (quantity delivered by material type)
-    material_data = DeliveryofPacked.objects.values('barcode__material').annotate(total_quantity=Sum('quantity')).order_by('-total_quantity')
-
-    pie_chart_data = {
-        'labels': [item['barcode__material'] for item in material_data],
-        'values': [item['total_quantity'] for item in material_data],
-    }
-
-    # Query for line chart (total cost over time)
-    cost_data = DeliveryofPacked.objects.values('transport_date').annotate(total_cost=Sum('cost')).order_by('transport_date')
-
-    line_chart_data = {
-        'labels': [str(item['transport_date']) for item in cost_data],
-        'values': [item['total_cost'] for item in cost_data],
-    }
+    labels = [row[0] for row in result]  # Extract the grades (e.g., ['A', 'B', 'C'])
+    counts = [row[1] for row in result]  # Extract the count for each grade
 
     return render(request, 'charts.html', {
-        'bar_chart_data': bar_chart_data,
-        'pie_chart_data': pie_chart_data,
-        'line_chart_data': line_chart_data,
-        'form':form,'submitted':submitted,
-    }, )
+        'form': form,
+        'submitted': submitted,
+        'selected_product': selected_product,
+        'labels': labels,
+        'counts': counts,
+    })
 
 
 
