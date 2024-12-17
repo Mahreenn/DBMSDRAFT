@@ -126,12 +126,12 @@ def update_distrib(request, pk):
         with connection.cursor() as cursor:
             cursor.execute("""
                 UPDATE warehouse_distribution
-                SET warehouseid = %s, supname = %s, delivery_date = %s
+                SET warehouseid = %s, supname = %s, date = %s
                 WHERE id = %s
             """, [warehouse_id, supplier_name, delivery_date, pk]) 
 
         # Redirect to the page where the updated distribution is displayed (change the URL as needed)
-        return HttpResponseRedirect(f'warehousedistribution/{pk}/')
+        return HttpResponseRedirect(reverse('distrib'))
 
     # Render the form if the method is GET or if there are errors in the form
     return render(request, 'add_distrib.html', {'form': form})
@@ -153,7 +153,7 @@ def charts(request):
     form = productVisualForm(request.POST)
     if request.method == "POST":     
         if form.is_valid():
-            brc = form.cleaned_data['Barcode']
+            prod = form.cleaned_data['product_Name']
 
         # Query for bar chart (total quantity delivered over time)
     deliveries = DeliveryofPacked.objects.values('transport_date').annotate(total_quantity=Sum('quantity')).order_by('transport_date')

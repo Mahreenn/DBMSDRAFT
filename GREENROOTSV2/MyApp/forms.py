@@ -42,20 +42,20 @@ class distribForm(forms.Form):
 
     
 class productVisualForm(forms.Form):
-    Barcode = forms.ChoiceField(label="Barcode", required=True)
+    product_Name = forms.ChoiceField(label="product", required=True)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
    
 
-        query = """SELECT barcode
-                  FROM packed_produce;"""
+        query = """SELECT product_Name
+                  FROM product;"""
         with connection.cursor() as cursor:
             cursor.execute(query)
             rows = cursor.fetchall()
 
-        Barcode_choices = [('', 'Choose a product Barcode:')] + [(row[0], row[0]) for row in rows]
+        choices = [('', 'Choose a product:')] + [(row[0], row[0]) for row in rows]
 
-        self.fields['Barcode'].choices = Barcode_choices
+        self.fields['product_Name'].choices = choices
         
 
 class fscform(forms.Form):
@@ -72,6 +72,10 @@ class fscform(forms.Form):
         self.fields['batchID'].choices = batches
 
 class gradingform(forms.Form):
+    delivery_recieved = forms.DateField(label="Inspection Date", widget=forms.SelectDateWidget(years=range(2014, 2024)))
+    inspection_expiry_date = forms.DateField(label="Inspection invalid after", widget=forms.SelectDateWidget(years=range(2016, 2025)))
+    ventilation = forms.IntegerField
+    cleanliness = forms.IntegerField
     vehicle_id = forms.ChoiceField(label="Vehicle ID:", required=True)
     inspector_id = forms.ChoiceField(label="Inspector ID:", required=True)
 
