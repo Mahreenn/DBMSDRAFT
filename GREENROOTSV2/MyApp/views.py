@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.db import connection
 from django.core.exceptions import ValidationError
 from .querries import create_all_tables,insert1,insert2
+import json
 
 #insert2()
 #insert1()
@@ -299,8 +300,33 @@ def FSC(request):
 
 
 def QC(request):
-    form = gradingform
-    return render(request,'qualityControl.html',{'form' : form})
+    form = gradingform()
+    query = """
+        SELECT warehouseid, AVG(ventilation) AS avg_ventilation, AVG(cleanliness) AS avg_cleanliness
+        FROM inspection_report
+        GROUP BY warehouseid
+        ORDER BY warehouseid;
+    """
+    
+    # Execute the query
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+    # Extract data into lists
+    warehouses = [row[0] for row in rows]
+    ventilation_scores = [float(row[1]) for row in rows]  # Convert to float
+    cleanliness_scores = [float(row[2]) for row in rows]  # Convert to float
+
+    # Pass the lists to the template as JSON
+    context = {
+        'form': form,
+        'warehouses': json.dumps(warehouses),
+        'ventilation_scores': json.dumps(ventilation_scores),
+        'cleanliness_scores': json.dumps(cleanliness_scores),
+    }
+
+    return render(request, 'qualityControl.html', context)
 
 def homepage(request):
     return render(request,'bg.html')

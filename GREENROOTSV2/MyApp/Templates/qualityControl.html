@@ -5,4 +5,51 @@
                  {{ form.as_p }}
                  <input type="submit" value="Submit" class="btn btn-secondary">
             </form>
+
+            <h3>Warehouse Ventilation & Cleanliness Scores</h3>
+
+    
+
+    <div class="chart-container">
+        <canvas id="warehouseChart"></canvas>
+    </div>
+
+    <script>
+        // Get data from Django context
+        var warehouses = JSON.parse('{{ warehouses|escapejs }}');
+        var ventilationScores = JSON.parse('{{ ventilation_scores|escapejs }}');
+        var cleanlinessScores = JSON.parse('{{ cleanliness_scores|escapejs }}');
+
+        // Create the line chart
+        var ctx = document.getElementById('warehouseChart').getContext('2d');
+        var warehouseChart = new Chart(ctx, {
+            type: 'line',  // Line chart
+            data: {
+                labels: warehouses,  // Warehouse IDs as labels on the X-axis
+                datasets: [{
+                    label: 'Ventilation Scores',  // Ventilation scores line
+                    data: ventilationScores,  // Ventilation scores data
+                    borderColor: 'rgba(54, 162, 235, 1)',  // Blue color for ventilation
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: false,  // No fill
+                    borderWidth: 2,
+                }, {
+                    label: 'Cleanliness Scores',  // Cleanliness scores line
+                    data: cleanlinessScores,  // Cleanliness scores data
+                    borderColor: 'rgba(255, 99, 132, 1)',  // Red color for cleanliness
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: false,  // No fill
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,  // Ensure the Y-axis starts at 0
+                    }
+                }
+            }
+        });
+    </script>
         {% endblock %}

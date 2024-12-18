@@ -101,29 +101,37 @@ class fscform(forms.Form):
         self.fields['batchID'].choices = batches
 
 class gradingform(forms.Form):
-    delivery_recieved = forms.DateField(label="Inspection Date", widget=forms.SelectDateWidget(years=range(2014, 2024)))
-    inspection_expiry_date = forms.DateField(label="Inspection invalid after", widget=forms.SelectDateWidget(years=range(2016, 2025)))
-    ventilation = forms.IntegerField
-    cleanliness = forms.IntegerField
-    vehicle_id = forms.ChoiceField(label="Vehicle ID:", required=True)
+    delivery_recieved = forms.DateField(label=" Inspection completed on", widget=forms.SelectDateWidget(years=range(2016, 2024)))
+    inspection_expiry_date = forms.DateField(label="Inspection invalid after", widget=forms.SelectDateWidget(years=range(2016, 2030)))
+    ventilation = forms.IntegerField(label="Ventillation score:", required=True, min_value=0.0)
+    cleanliness = forms.IntegerField(label="Cleanliness score", required=True, min_value=0.0)
+    warehouseid = forms.ChoiceField(label="warehouse ID:", required=True)
     inspector_id = forms.ChoiceField(label="Inspector ID:", required=True)
+    
+    def clean_inspection_expiry_date(self):
+        # Access form cleaned data
+        delivery_recieved = self.cleaned_data.get('delivery_recieved')
+        inspection_expiry_date = self.cleaned_data.get('inspection_expiry_date')
 
+        if delivery_recieved and inspection_expiry_date:
+            if inspection_expiry_date <= delivery_recieved:
+                raise forms.ValidationError("Inspection expiry date must be later than the inspection date.")
+
+        return inspection_expiry_date
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        query = """SELECT vehicle_id
-                  FROM vehicle;"""
+        q1 = """SELECT warehouseid
+                  FROM warehouse;"""
         with connection.cursor() as cursor:
-            cursor.execute(query)
+            cursor.execute(q1)
             rows = cursor.fetchall()
-        vehicles = [('', 'Vehicle ID:')] + [(row[0], row[0]) for row in rows]
-        self.fields['vehicle_id'].choices = vehicles
+        warehouses = [('', ' ')] + [(row[0], row[0]) for row in rows]
+        self.fields['warehouseid'].choices = warehouses
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        query = """SELECT IspecialistID
+        q2= """SELECT IspecialistID
                   FROM inspector;"""
         with connection.cursor() as cursor:
-            cursor.execute(query)
+            cursor.execute(q2)
             rows = cursor.fetchall()
-        inspectors = [('', 'Vehicle ID:')] + [(row[0], row[0]) for row in rows]
+        inspectors = [('', ' ')] + [(row[0], row[0]) for row in rows]
         self.fields['inspector_id'].choices = inspectors

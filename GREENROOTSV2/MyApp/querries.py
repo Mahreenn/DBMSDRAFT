@@ -233,6 +233,19 @@ def create_all_tables():
 
 def insert1():
     insertwofk = [
+        """INSERT INTO inspection_report (date_received, date_expired, ventilation, cleanliness, inspector_id, warehouseid, name_of_certification)
+            VALUES
+            ('2024-01-01', '2025-01-01', 5, 7, 13, 1, 'HACCP Basic Certification'),
+            ('2024-02-01', '2025-02-01', 6, 8, 21, 2, 'HACCP Level 1 Certification'),
+            ('2024-03-01', '2025-03-01', 4, 6, 25, 3, 'HACCP Level 2 Certification'),
+            ('2024-04-01', '2025-04-01', 5, 7, 13, 4, 'HACCP Advanced Certification'),
+            ('2024-05-01', '2025-05-01', 3, 5, 21, 5, 'HACCP Certification for Food Manufacturing'),
+            ('2024-06-01', '2025-06-01', 6, 9, 25, 6, 'HACCP for Meat Processing'),
+            ('2024-07-01', '2025-07-01', 4, 7, 13, 7, 'HACCP for Seafood Processing'),
+            ('2024-08-01', '2025-08-01', 5, 6, 23, 8, 'HACCP Certification for Dairy Production'),
+            ('2024-09-01', '2025-09-01', 7, 8, 21, 9, 'HACCP Level 3 Certification'),
+            ('2024-10-01', '2025-10-01', 8, 10, 13, 10, 'HACCP for Fruits and Vegetables');""",
+
         """INSERT IGNORE INTO packed_produce (barcode, weight, material, cost_per_unit)
         VALUES
         ('B001', 10.5, 'Plastic', 15.25),
@@ -404,8 +417,6 @@ def insert2():
         ('TransFast', 'Sunset Blvd', 'Sylhet'),
         ('QuickMove', 'Elm Street', 'Mymensingh'),
         ('CargoPlus', 'Highway 1', 'Rajshahi');""",
-
-      
 
         """INSERT IGNORE  INTO specialist_license (specialist_id, degree_name, date_received) VALUES
         (1, 'Master of Science in Food Safety', '2023-06-15'),
