@@ -7,7 +7,7 @@ class delPForm(forms.Form):
     transport_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}),label="Transport Date" )
     quantity = forms.FloatField(label="Quantity (in units)",min_value=0.0)
     temperature = forms.FloatField(label="Temperature (°C)")
-    cost = forms.FloatField(label="Cost (USD)",min_value=0.0,)           
+    cost = forms.FloatField(label="Cost (BDT)",min_value=0.0,)           
     warehouse_id = forms.ChoiceField(label="Warehouse ID", required=True)
     vehicle_id = forms.ChoiceField(label="vehicle id", required=True)
     barcode =  forms.ChoiceField(label="barcode", required=True)
@@ -20,7 +20,7 @@ class delPForm(forms.Form):
         with connection.cursor() as cursor:
             cursor.execute(q1)
             rows = cursor.fetchall()
-        warehouse_choices = [('', 'Choose warehouse ID')] + [(row[0], row[0]) for row in rows]
+        warehouse_choices = [('', '  ')] + [(row[0], row[0]) for row in rows]
         self.fields['warehouse_id'].choices = warehouse_choices
 
         q2 = """SELECT vehicle_id
@@ -28,7 +28,7 @@ class delPForm(forms.Form):
         with connection.cursor() as cursor:
             cursor.execute(q2)
             rows2 = cursor.fetchall()
-        vehicles = [('', 'Choose vehicle ID')] + [(row[0], row[0]) for row in rows2]
+        vehicles = [('', '   ')] + [(row[0], row[0]) for row in rows2]
         self.fields['vehicle_id'].choices = vehicles
 
         q3 = """SELECT barcode
@@ -36,12 +36,11 @@ class delPForm(forms.Form):
         with connection.cursor() as cursor:
             cursor.execute(q3)
             rows3 = cursor.fetchall()
-        barcodes = [('', 'barcode:')] + [(row[0], row[0]) for row in rows3]
+        barcodes = [('', '  ')] + [(row[0], row[0]) for row in rows3]
         self.fields['barcode'].choices = barcodes
 
 
 class distribForm(forms.Form):
-    #delivery_id = forms.IntegerField(label="Delivery ID", required=True)
     warehouse_id = forms.ChoiceField(label="Warehouse ID", required=True)
     supplier_name = forms.ChoiceField(label="Supplier Name", required=True)
     delivery_date = forms.DateField(label="Delivery Date", widget=forms.SelectDateWidget(years=range(2016, 2025)))

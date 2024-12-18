@@ -6,7 +6,6 @@ from django.db.models import Sum
 from django.urls import reverse
 from django.db import connection
 from django.core.exceptions import ValidationError
-
 from .querries import create_all_tables,insert1,insert2
 
 #insert2()
@@ -31,6 +30,13 @@ def add_delP(request):    #for c in CRUD
             warehouse_id = form.cleaned_data['warehouse_id']
             vehicle_id = form.cleaned_data['vehicle_id']
             barcode = form.cleaned_data['barcode']
+
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO delivery_of_packed (transport_date, quantity,temperature,cost,warehouse_id,vehicle_id,barcode)
+                    VALUES ( %s, %s, %s,%s,%s,%s,%s)
+                """, [ date, quantity, temperature,cost,warehouse_id,vehicle_id,barcode])
+
             return HttpResponseRedirect('warehousemanagerDashboard.html?submitted=True')
     else:
         form = delPForm
@@ -39,17 +45,51 @@ def add_delP(request):    #for c in CRUD
     return render(request, 'add_delP.html',{'form':form,'submitted':submitted})
 
 def update_delP(request,pk):
-    delp = DeliveryofPacked.objects.get(delivery_id=pk)
-    form =delPForm(instance=delp)
+     with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM delivery_of_packed WHERE delivery_id = %s", [pk])
+        row = cursor.fetchone()
+        if not row:
+            raise Http404("Distribution record not found.")
+        initial_data = {
+            'transport_date': row[1],  
+            'quantity'      : row[2], 
+            'temperature'   : row[3],
+            'cost'          : row[4],
+            'warehouse_id'   : row[5],
+            'vehicle_id'     : row[6],  
+            'barcode'        :  row[7],
+        }
+        form = delPForm(request.POST or None, initial=initial_data)
+        if request.method == 'POST' and form.is_valid():
+            transport_date = form.cleaned_data['transport_date']
+            quantity = form.cleaned_data['quantity']
+            temperature = form.cleaned_data['temperature']
+            cost = form.cleaned_data['cost']
+            warehouse_id = form.cleaned_data['warehouse_id']
+            vehicle_id = form.cleaned_data['vehicle_id']
+            barcode = form.cleaned_data['barcode']
 
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE delivery_of_packed
+                    SET transport_date = %s, quantity = %s, temperature= %s, cost = %s, warehouse_id = %s, vehicle_id = %s, barcode = %s
+                    WHERE delivery_id = %s
+                """, [transport_date, quantity, temperature, cost, warehouse_id, vehicle_id, barcode, pk]) 
+
+            return HttpResponseRedirect(reverse('WM'))
+
+        return render(request, 'add_delP.html', {'form': form})
+
+def dlt_delP(request,pk):
     if request.method == 'POST':
-        form= delPForm(request.POST, instance=delp)
-        if form.is_valid():
-            form.save()
-            return  HttpResponseRedirect(reverse('WM') + '?submitted=True')
-    context = {'form':form}
-    return render(request,'add_delP.html',context)
-    
+        query = "DELETE FROM delivery_of_packed WHERE delivery_id = %s;"
+        with connection.cursor() as cursor:
+            cursor.execute(query, [pk])
+            if cursor.rowcount == 0:
+                raise Http404("Record not found.")
+        #return HttpResponseRedirect(reverse('distrib'))   
+        return HttpResponseRedirect(reverse('WM'))
+                                            
 
 def WMDash(request):
     query = """ SELECT *
@@ -70,7 +110,6 @@ def distrib(request):
     sort_by_date_str = request.GET.get('sort_by_date', 'false').lower()
     sort_by_date = sort_by_date_str == 'true'
     
-    #sort_by_date = request.GET.get('sort_by_date', 'false').lower() == 'true'
     if sort_by_date:
         query += " ORDER BY wd.date DESC"
 
@@ -86,7 +125,6 @@ def add_distrib(request):
     if request.method == "POST":
         form = distribForm(request.POST)
         if form.is_valid():
-           # field1 = form.cleaned_data['delivery_id']
             field2 = form.cleaned_data['delivery_date']
             field3 = form.cleaned_data['warehouse_id']
             field4 = form.cleaned_data['supplier_name']
@@ -134,10 +172,8 @@ def update_distrib(request, pk):
                 WHERE id = %s
             """, [warehouse_id, supplier_name, delivery_date, pk]) 
 
-        # Redirect to the page where the updated distribution is displayed (change the URL as needed)
         return HttpResponseRedirect(reverse('distrib'))
 
-    # Render the form if the method is GET or if there are errors in the form
     return render(request, 'add_distrib.html', {'form': form})
 
 def delete_distrib(request, pk):
@@ -167,9 +203,8 @@ def charts(request):
             result = cursor.fetchall()
     except Exception as e:
         result = []  
-    labels = [row[0] for row in result]  # Extract the grades (e.g., ['A', 'B', 'C'])
-    counts = [row[1] for row in result]  # Extract the count for each grade
-
+    labels = [row[0] for row in result]  
+    counts = [row[1] for row in result]  
 
     #LINECHART
     if request.method == "POST":  
@@ -211,8 +246,6 @@ def charts(request):
         'labels': labels,
         'counts': counts,
     })
-
-
 
 def FSC(request):
     results = None 
