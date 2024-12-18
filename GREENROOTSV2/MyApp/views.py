@@ -19,17 +19,18 @@ def all_retailer(request):
     return render(request, 'retailerlist.html',
                   {'ret_list': ret_list})
 
-def deliveryP(request):  # for r in CRUD
-    packeddel_list = DeliveryofPacked.objects.all()
-    return render(request, 'deliveriesP.html',
-                  {'packeddel_list': packeddel_list})
-
 def add_delP(request):    #for c in CRUD
     submitted = False
     if request.method == "POST":
         form = delPForm(request.POST)
         if form.is_valid():
-            form.save()
+            date = form.cleaned_data['transport_date']
+            quantity = form.cleaned_data['quantity']
+            temperature = form.cleaned_data['temperature']
+            cost = form.cleaned_data['cost']
+            warehouse_id = form.cleaned_data['warehouse_id']
+            vehicle_id = form.cleaned_data['vehicle_id']
+            barcode = form.cleaned_data['barcode']
             return HttpResponseRedirect('warehousemanagerDashboard.html?submitted=True')
     else:
         form = delPForm
@@ -51,10 +52,13 @@ def update_delP(request,pk):
     
 
 def WMDash(request):
-    packeddel_list = DeliveryofPacked.objects.all()  
-    print(packeddel_list) 
-    context = {'packeddel_list': packeddel_list}
-    return render(request, 'warehousemanagerDashboard.html', context)
+    query = """ SELECT *
+                from delivery_of_packed """
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+    return render(request, 'warehousemanagerDashboard.html',{'rows': rows} )
 
 
 def distrib(request):
@@ -148,10 +152,11 @@ def delete_distrib(request, pk):
     
 
 def charts(request):
-    form = productVisualForm()
+    form = productVisualForm(request.POST)  
     submitted = False  
     selected_product = None  
-
+   
+   #BARCHART
     try:
         with connection.cursor() as cursor:
             cursor.execute('''
@@ -162,12 +167,45 @@ def charts(request):
             result = cursor.fetchall()
     except Exception as e:
         result = []  
-
     labels = [row[0] for row in result]  # Extract the grades (e.g., ['A', 'B', 'C'])
     counts = [row[1] for row in result]  # Extract the count for each grade
 
+
+    #LINECHART
+    if request.method == "POST":  
+        if form.is_valid():  
+            selected_product = form.cleaned_data['product_Name']
+            submitted = True
+
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT product_id
+                    FROM product
+                    WHERE product_Name = %s
+                """, [selected_product]) 
+                r1 = cursor.fetchone()  
+                product_id = r1[0] if r1 else None  
+
+            rows = []
+            with connection.cursor() as cursor:
+                cursor.execute('''
+                    SELECT 
+                        EXTRACT(YEAR FROM harvest_date) AS harvest_year,
+                        EXTRACT(MONTH FROM harvest_date) AS harvest_month,
+                        produceID,
+                        grade,
+                        COUNT(*) AS harvest_count
+                    FROM 
+                        harvested_produce
+                    WHERE produceID = %s
+                    GROUP BY 
+                        harvest_year, harvest_month, produceID, grade
+                    ORDER BY 
+                        harvest_year, harvest_month, produceID;
+                    ''', [product_id])
+                rows = cursor.fetchall()
+  
     return render(request, 'charts.html', {
-        'form': form,
         'submitted': submitted,
         'selected_product': selected_product,
         'labels': labels,

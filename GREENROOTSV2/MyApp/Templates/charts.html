@@ -59,7 +59,7 @@
                     labels: {{ labels|safe }}, 
                     datasets: [{
                     label: 'Grade Distribution',
-                    data: {{ counts|safe }},  // Insert counts of each grade
+                    data: {{ counts|safe }},  
                     backgroundColor: [
                          'blue', 'red', 'green',  'gray','orange'
                     ],
@@ -82,10 +82,11 @@
         </div>
         
 
-        </div>
-       
+<div style="width: 80%; margin: auto;">
+    <canvas id="harvestChart"></canvas>
+</div>
 
-            <div>
+       
                 <br/>
                 <h3>Visualizing Product Metrics </h3>
                 <br/>

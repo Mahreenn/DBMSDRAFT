@@ -66,7 +66,7 @@
 
 <!-- Add delivery count display -->
 <div class="delivery-count">
-  <h2>Total Deliveries: {{ packeddel_list|length }}</h2>
+  <h2>Total Deliveries: {{ rows|length }}</h2>
 </div>
 
 <div class="dashboard-title"> </div>
@@ -78,28 +78,45 @@
 <br/>
 <br/>
 
-{% for p in packeddel_list %}
-<div class="card">
-  <div class="card-header">
-    {{ p }}
-  </div>
-  <div class="card-body">
-    <h5 class="card-title"></h5>
-    <p class="card-text">
+<table class="table table-striped">
+  <thead>
       <tr>
-        <td>transport_date: {{ p.transport_date }}</td>
-        <td>cost: {{ p.cost }}</td>
-        <td>quantity: {{ p.quantity }}</td>
-        <td><a class ="btn btn-sm btn-info" href="{% url 'update-delP' p.delivery_id %}"> Update </a></td>
-        <td><a class ="btn btn-sm btn-danger" href="#"> Delete </a></td>
+          <th scope="col">Delivery ID</th>
+          <th scope="col">Date</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Temperature</th>
+          <th scope="col">Cost</th>
+          <th scope="col">Warehouse ID</th>
+          <th scope="col">Vehicle ID</th>
+          <th scope="col">Barcode</th>
+          <th scope="col">Actions</th>
       </tr>
-    
-    </p>
+  </thead>
+  <tbody>
+      {% for row in rows %}
+      <tr>
+          <td>{{ row.0 }}</td>
+          <td>{{ row.1 }}</td>
+          <td>{{ row.2 }}</td>
+          <td>{{ row.3 }}</td>
+          <td>{{ row.4 }}</td>
+          <td>{{ row.5 }}</td>
+          <td>{{ row.6 }}</td>
+          <td>{{ row.7 }}</td>
+          <td>
+              <a class="btn btn-sm btn-info" href="#">Update</a>
+              <form method="POST" action="#" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+              </form>
+          </td>
+      </tr>
+      {% endfor %}
+  </tbody>
+</table>
   </div>
 </div>
 <br/>
-{% endfor %}
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
 </body>
 </html>

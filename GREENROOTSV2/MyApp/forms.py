@@ -1,14 +1,44 @@
 from django import forms
 from django.forms import ModelForm
-from .modelsdel import DeliveryofPacked
+#from .modelsdel import DeliveryofPacked
 from django.db import connection
-from django.core.exceptions import ValidationError
 
+class delPForm(forms.Form):
+    transport_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}),label="Transport Date" )
+    quantity = forms.FloatField(label="Quantity (in units)",min_value=0.0)
+    temperature = forms.FloatField(label="Temperature (°C)")
+    cost = forms.FloatField(label="Cost (USD)",min_value=0.0,)           
+    warehouse_id = forms.ChoiceField(label="Warehouse ID", required=True)
+    vehicle_id = forms.ChoiceField(label="vehicle id", required=True)
+    barcode =  forms.ChoiceField(label="barcode", required=True)
 
-class delPForm(ModelForm):
-    class Meta:
-        model = DeliveryofPacked
-        fields = "__all__"             #('transport_date','temperature','cost','quantity','barcode', 'warehouseid','vehicleid')  
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+   
+        q1 = """SELECT warehouseid
+                  FROM warehouse;"""
+        with connection.cursor() as cursor:
+            cursor.execute(q1)
+            rows = cursor.fetchall()
+        warehouse_choices = [('', 'Choose warehouse ID')] + [(row[0], row[0]) for row in rows]
+        self.fields['warehouse_id'].choices = warehouse_choices
+
+        q2 = """SELECT vehicle_id
+                  FROM vehicle;"""
+        with connection.cursor() as cursor:
+            cursor.execute(q2)
+            rows2 = cursor.fetchall()
+        vehicles = [('', 'Choose vehicle ID')] + [(row[0], row[0]) for row in rows2]
+        self.fields['vehicle_id'].choices = vehicles
+
+        q3 = """SELECT barcode
+                  FROM packed_produce;"""
+        with connection.cursor() as cursor:
+            cursor.execute(q3)
+            rows3 = cursor.fetchall()
+        barcodes = [('', 'barcode:')] + [(row[0], row[0]) for row in rows3]
+        self.fields['barcode'].choices = barcodes
+
 
 class distribForm(forms.Form):
     #delivery_id = forms.IntegerField(label="Delivery ID", required=True)
