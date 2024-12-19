@@ -4,7 +4,7 @@ from .forms import delPForm,distribForm,productVisualForm,fscform,gradingform
 from django.http import HttpResponseRedirect,Http404
 from django.db.models import Sum
 from django.urls import reverse
-from django.db import connection
+from django.db import connection, IntegrityError
 from django.core.exceptions import ValidationError
 from .querries import create_all_tables,insert1,insert2
 import json
@@ -189,7 +189,7 @@ def delete_distrib(request, pk):
     
 
 def charts(request):
-    form = productVisualForm(request.POST)  
+    form = productVisualForm(request.POST or None)  
     submitted = False  
     selected_product = None  
    
@@ -206,8 +206,8 @@ def charts(request):
         result = []  
     labels = [row[0] for row in result]  
     counts = [row[1] for row in result]  
-
-    #LINECHART
+    
+    #heatmap
     if request.method == "POST":  
         if form.is_valid():  
             selected_product = form.cleaned_data['product_Name']
@@ -222,25 +222,28 @@ def charts(request):
                 r1 = cursor.fetchone()  
                 product_id = r1[0] if r1 else None  
 
-            rows = []
             with connection.cursor() as cursor:
-                cursor.execute('''
-                    SELECT 
-                        EXTRACT(YEAR FROM harvest_date) AS harvest_year,
-                        EXTRACT(MONTH FROM harvest_date) AS harvest_month,
-                        produceID,
-                        grade,
-                        COUNT(*) AS harvest_count
-                    FROM 
-                        harvested_produce
-                    WHERE produceID = %s
-                    GROUP BY 
-                        harvest_year, harvest_month, produceID, grade
-                    ORDER BY 
-                        harvest_year, harvest_month, produceID;
-                    ''', [product_id])
-                rows = cursor.fetchall()
-  
+                cursor.execute("""
+                SELECT 
+                    EXTRACT(YEAR FROM harvest_date) AS harvest_year,
+                    EXTRACT(MONTH FROM harvest_date) AS harvest_month,
+                    grade,
+                    COUNT(*) AS harvest_count
+                FROM 
+                    harvested_produce
+                WHERE produceID = %s
+                GROUP BY 
+                    harvest_year, harvest_month, grade
+                ORDER BY 
+                    harvest_year, harvest_month, grade;
+            """, [product_id])
+            result = cursor.fetchall()
+
+        harvest_counts_by_grade = {}
+        month_labels = []  
+        all_grades = set()  
+
+    
     return render(request, 'charts.html', {
         'submitted': submitted,
         'selected_product': selected_product,
@@ -300,25 +303,55 @@ def FSC(request):
 
 
 def QC(request):
-    form = gradingform()
+    if request.method == 'POST':
+        form = gradingform(request.POST)
+        
+        if form.is_valid():
+            date_received = form.cleaned_data['date_recieved']
+            date_expired = form.cleaned_data['inspection_expiry_date']
+            ventilation = form.cleaned_data['ventilation']
+            cleanliness = form.cleaned_data['cleanliness']
+            warehouse_id = int(form.cleaned_data['warehouseid'])
+            inspector_id = int(form.cleaned_data['inspector_id'])
+            
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                        INSERT INTO inspection_report (
+                        date_received, 
+                        date_expired, 
+                        ventilation, 
+                        cleanliness, 
+                        warehouseid, 
+                        inspector_id
+                    ) 
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """, 
+                    [date_received, date_expired, ventilation, cleanliness, warehouse_id, inspector_id]
+                )
+            except IntegrityError as e:
+                    print(f"Database error: {e}")
+                    return render(request, 'qualityControl.html', {'form': form, 'error': 'Database error occurred. Please try again later.'})
+                    
+            return HttpResponseRedirect(request.path)  
+    else:
+        form = gradingform()  
+
+    #LINECHART
     query = """
         SELECT warehouseid, AVG(ventilation) AS avg_ventilation, AVG(cleanliness) AS avg_cleanliness
         FROM inspection_report
         GROUP BY warehouseid
         ORDER BY warehouseid;
     """
-    
-    # Execute the query
     with connection.cursor() as cursor:
         cursor.execute(query)
         rows = cursor.fetchall()
 
-    # Extract data into lists
     warehouses = [row[0] for row in rows]
-    ventilation_scores = [float(row[1]) for row in rows]  # Convert to float
-    cleanliness_scores = [float(row[2]) for row in rows]  # Convert to float
+    ventilation_scores = [float(row[1]) for row in rows]  
+    cleanliness_scores = [float(row[2]) for row in rows]  
 
-    # Pass the lists to the template as JSON
     context = {
         'form': form,
         'warehouses': json.dumps(warehouses),

@@ -74,8 +74,6 @@ class productVisualForm(forms.Form):
     product_Name = forms.ChoiceField(label="product", required=True)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-   
-
         query = """SELECT product_Name
                   FROM product;"""
         with connection.cursor() as cursor:
@@ -101,23 +99,13 @@ class fscform(forms.Form):
         self.fields['batchID'].choices = batches
 
 class gradingform(forms.Form):
-    delivery_recieved = forms.DateField(label=" Inspection completed on", widget=forms.SelectDateWidget(years=range(2016, 2024)))
+    date_recieved = forms.DateField(label=" Inspection completed on", widget=forms.SelectDateWidget(years=range(2016, 2024)))
     inspection_expiry_date = forms.DateField(label="Inspection invalid after", widget=forms.SelectDateWidget(years=range(2016, 2030)))
     ventilation = forms.IntegerField(label="Ventillation score:", required=True, min_value=0.0)
     cleanliness = forms.IntegerField(label="Cleanliness score", required=True, min_value=0.0)
     warehouseid = forms.ChoiceField(label="warehouse ID:", required=True)
     inspector_id = forms.ChoiceField(label="Inspector ID:", required=True)
     
-    def clean_inspection_expiry_date(self):
-        # Access form cleaned data
-        delivery_recieved = self.cleaned_data.get('delivery_recieved')
-        inspection_expiry_date = self.cleaned_data.get('inspection_expiry_date')
-
-        if delivery_recieved and inspection_expiry_date:
-            if inspection_expiry_date <= delivery_recieved:
-                raise forms.ValidationError("Inspection expiry date must be later than the inspection date.")
-
-        return inspection_expiry_date
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         q1 = """SELECT warehouseid
