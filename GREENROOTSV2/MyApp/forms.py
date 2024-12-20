@@ -70,20 +70,49 @@ class distribForm(forms.Form):
         self.fields['warehouse_id'].choices = warehouse_choices
 
     
-class productVisualForm(forms.Form):
-    product_Name = forms.ChoiceField(label="product", required=True)
+class productnutrition(forms.Form):
+    barcode = forms.ChoiceField(label="barcode of the packaged produce:", required=True)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        query = """SELECT product_Name
-                  FROM product;"""
+        query = """SELECT barcode
+                  FROM nutrition_content_report"""
         with connection.cursor() as cursor:
             cursor.execute(query)
             rows = cursor.fetchall()
 
-        choices = [('', 'Choose a product:')] + [(row[0], row[0]) for row in rows]
+        choices = [('', 'Choose a product barcdoe:')] + [(row[0], row[0]) for row in rows]
+        self.fields['barcode'].choices = choices
 
-        self.fields['product_Name'].choices = choices
-        
+class harvestedgradingForm(forms.Form):
+    sowing_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=True)
+    harvest_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=True)
+    weight = forms.FloatField(min_value=0, required=True)
+    texture = forms.CharField(max_length=50, required=True)
+    colour = forms.CharField(max_length=50, required=True)
+    fungal_growth = forms.BooleanField(required=False)
+    weather_conditions = forms.CharField(max_length=50, required=True)
+    pesticides_used = forms.BooleanField(required=False)
+    nutrionistID = forms.ChoiceField(required=True)
+    productID = forms.ChoiceField(required=True)
+    grade = forms.ChoiceField(choices=[('Ungraded', 'Ungraded'), ('A', 'A'), ('B', 'B'), ('C', 'C'), ('D', 'D')], initial='Ungraded', required=True)
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        q1 = """SELECT NspecialistID
+                  FROM nutrition_specialist;"""
+        with connection.cursor() as cursor:
+            cursor.execute(q1)
+            rows = cursor.fetchall()
+        nutritionists = [('', 'nutrionistID:')] + [(row[0], row[0]) for row in rows]
+        self.fields['nutrionistID'].choices = nutritionists
+
+        q2 = """SELECT product_ID
+                  FROM product;"""
+        with connection.cursor() as cursor2:
+            cursor2.execute(q2)
+            rows2 = cursor2.fetchall()
+        prods = [('', 'products:')] + [(row[0], row[0]) for row in rows2]
+        self.fields['productID'].choices = prods
 
 class fscform(forms.Form):
     batchID = forms.ChoiceField(label="Choose a harvest Batch ID to track its journey through the supply chain:", required=True)

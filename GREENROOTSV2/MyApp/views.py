@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .modelsdel import Retailer,DeliveryofPacked,WarehouseDistribution,PackedProduce
-from .forms import delPForm,distribForm,productVisualForm,fscform,gradingform
+from .forms import delPForm,distribForm,fscform,gradingform,harvestedgradingForm,productnutrition
 from django.http import HttpResponseRedirect,Http404
 from django.db.models import Sum
 from django.urls import reverse
@@ -88,7 +88,6 @@ def dlt_delP(request,pk):
             cursor.execute(query, [pk])
             if cursor.rowcount == 0:
                 raise Http404("Record not found.")
-        #return HttpResponseRedirect(reverse('distrib'))   
         return HttpResponseRedirect(reverse('WM'))
                                             
 
@@ -189,10 +188,49 @@ def delete_distrib(request, pk):
     
 
 def charts(request):
-    form = productVisualForm(request.POST or None)  
-    submitted = False  
-    selected_product = None  
-   
+    if request.method == 'POST':
+        form1 = harvestedgradingForm(request.POST)
+        if form1.is_valid():
+            sowing_date = form1.cleaned_data['sowing_date']
+            harvest_date = form1.cleaned_data['harvest_date']
+            weight = form1.cleaned_data['weight']
+            texture = form1.cleaned_data['texture']
+            colour = form1.cleaned_data['colour']
+            fungal_growth = form1.cleaned_data['fungal_growth']
+            weather_conditions = form1.cleaned_data['weather_conditions']
+            pesticides_used = form1.cleaned_data['pesticides_used']
+            nutrionistID = int(form1.cleaned_data['nutrionistID'])
+            productID = int(form1.cleaned_data['productID'])
+            grade = form1.cleaned_data['grade']
+            
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                        INSERT INTO harvested_produce (
+                        sowing_date, 
+                        harvest_date, 
+                        weight, 
+                        texture, 
+                        colour,
+                        fungal_growth,
+                        weather_conditions,
+                        pesticides_used,
+                        nutrionistID,
+                        produceID,
+                        grade        
+                    ) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s,%s,%s)
+                    """, 
+                    [sowing_date, harvest_date, weight, texture, colour, fungal_growth, weather_conditions, pesticides_used,nutrionistID ,productID, grade])
+        
+            except IntegrityError as e:
+                    print(f"Database error: {e}")
+                    return render(request, 'charts.html', {'form1': form1, 'error': 'Database error occurred. Please try again later.'})
+                    
+            return HttpResponseRedirect(request.path) 
+    else:
+        form1 = harvestedgradingForm()
+
    #BARCHART
     try:
         with connection.cursor() as cursor:
@@ -206,49 +244,26 @@ def charts(request):
         result = []  
     labels = [row[0] for row in result]  
     counts = [row[1] for row in result]  
-    
-    #heatmap
-    if request.method == "POST":  
-        if form.is_valid():  
-            selected_product = form.cleaned_data['product_Name']
-            submitted = True
+   
+    selected_product = None   
+    if request.method == 'POST':
+        form2 = productnutrition(request.POST )
+        if form2.is_valid():
+            selected_batch_id = form2.cleaned_data['batchID']
+            
+            if selected_batch_id:
+                query = """ """
+                with connection.cursor() as cursor:
+                    cursor.execute(query, [selected_batch_id])
+                    results = cursor.fetchall()
 
-            with connection.cursor() as cursor:
-                cursor.execute("""
-                    SELECT product_id
-                    FROM product
-                    WHERE product_Name = %s
-                """, [selected_product]) 
-                r1 = cursor.fetchone()  
-                product_id = r1[0] if r1 else None  
 
-            with connection.cursor() as cursor:
-                cursor.execute("""
-                SELECT 
-                    EXTRACT(YEAR FROM harvest_date) AS harvest_year,
-                    EXTRACT(MONTH FROM harvest_date) AS harvest_month,
-                    grade,
-                    COUNT(*) AS harvest_count
-                FROM 
-                    harvested_produce
-                WHERE produceID = %s
-                GROUP BY 
-                    harvest_year, harvest_month, grade
-                ORDER BY 
-                    harvest_year, harvest_month, grade;
-            """, [product_id])
-            result = cursor.fetchall()
-
-        harvest_counts_by_grade = {}
-        month_labels = []  
-        all_grades = set()  
-
-    
     return render(request, 'charts.html', {
-        'submitted': submitted,
         'selected_product': selected_product,
         'labels': labels,
         'counts': counts,
+        'form1' :form1,
+        'form2' :form2,
     })
 
 def FSC(request):

@@ -1,12 +1,11 @@
 {% extends "layout.html" %}
         {% block main %}
-        
           <h3>
-            <strong>Grading Criterias:</strong>
+            <strong>Grading Criterias for Harvested Produce:</strong>
           </h3><br/>
         <div class="d-flex align-items-center">
             <a class="btn btn-sm btn-success " href="gradeA.html">  <strong>Grade A:</strong> High-quality produce 
-                <ul>
+                <ul style="list-style-type: none; padding: 2; text-align: center; margin: 0 auto; width: fit-content;">
                     <ul>Weight: ≥ 27</ul>
                     <ul> fungal_growth = 0</ul>
                     <ul> Pesticides used: 1</ul>
@@ -15,14 +14,14 @@
             <br/>
             <br/>
             <a class="btn btn-sm btn-info" href="gradeB.html"><strong>Grade B:</strong> Good-quality produce
-                <ul>
+                <ul style="list-style-type: none; padding: 2; text-align: center; margin: 0 auto; width: fit-content;">
                     <ul>Weight: 22 ≤ Weight ≤ 27</ul>
                     <ul>fungal_growth = 0</ul>
                     <ul>Pesticides: optional</ul>
                 </ul> </a><br/>
                 <a class="btn btn-sm btn-warning" href="gradeC.html">
                     <strong>Grade C:</strong> Lower-quality produce 
-                    <ul>
+                    <ul style="list-style-type: none; padding: 2; text-align: center; margin: 0 auto; width: fit-content;">
                         <ul>Weight: 20 ≤ Weight ≤ 22</ul>
                         <ul>Fungal growth = 1</ul>
                         <ul>Pesticides used = 0</ul>
@@ -30,7 +29,7 @@
                 </a>
                 <a class="btn btn-sm btn-danger " href="gradeD.html">
                     <strong>Grade D:</strong> Lowest-quality produce
-                    <ul>
+                    <ul style="list-style-type: none; padding: 2; text-align: center; margin: 0 auto; width: fit-content;">
                         <ul>Weight: ≤ 20 </ul>
                         <ul>Fungal growth present: 1</ul>
                         <ul>pesticides_used = 0</ul>
@@ -38,58 +37,73 @@
                 </a>
                 <a class="btn btn-sm btn-secondary " href="#">
                     <strong>UNGRADED</strong> Yet to be Graded
-                    <ul>
+                    <ul style="list-style-type: none; padding: 2; text-align: center; margin: 0 auto; width: fit-content;">
                         <ul>Weight: </ul>
                         <ul>Fungal growth present</ul>
                         <ul>pesticides_used</ul>
                     </ul>
                 </a>
         </div>
-        
-        <div class="chart-container">
+        <div  style="display: flex; align-items: flex-start;">
+                    <div class="chart-container" style="flex: 1.5; margin-right: 30px;">
 
-            <canvas id="gradeChart" width="400" height="200"></canvas>
+                        <canvas id="gradeChart"></canvas>
 
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script>
-                var ctx = document.getElementById('gradeChart').getContext('2d');
-                var gradeChart = new Chart(ctx, {
-                type: 'bar', 
-                data: {
-                    labels: {{ labels|safe }}, 
-                    datasets: [{
-                    label: 'Grade Distribution',
-                    data: {{ counts|safe }},  
-                    backgroundColor: [
-                         'blue', 'red', 'green',  'gray','orange'
-                    ],
-                    borderColor: [
-                        'darkgreen', 'darkblue', 'darkorange', 'gray' , 'darkred'
-                    ],
-                    borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <script>
+                            var ctx = document.getElementById('gradeChart').getContext('2d');
+                            var gradeChart = new Chart(ctx, {
+                            type: 'bar', 
+                            data: {
+                                labels: {{ labels|safe }}, 
+                                datasets: [{
+                                label: 'Grade Distribution',
+                                data: {{ counts|safe }},  
+                                backgroundColor: [
+                                    'blue', 'red', 'green',  'gray','orange'
+                                ],
+                                borderColor: [
+                                    'darkgreen', 'darkblue', 'darkorange', 'gray' , 'darkred'
+                                ],
+                                borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    x: {
+                        title: {
+                            display: true,
+                            text: 'Grades'  
+                        }
+                    },
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Quantity'  
+                        }
                     }
-                    }
-                }
-                });
-             </script>
-        </div>  
-                        
-
-       
-                <br/>
-                <h3>Visualizing Product Metrics </h3>
-                <br/>
+                                }
+                            }
+                            });
+                        </script>
+                    </div>
+                    <form action="" method=POST style="flex: 2.5;">
+                        {% csrf_token %}
+                         {{ form1.as_p }}
+                         <input type="submit" value="Submit" class="btn btn-primary">
+                    </form>   
+        </div>
+        <br/>
+        <h3>
+            <strong>Nutrition Content Visualization</strong>
+          </h3><br/> 
+        <div>   
                     <form action="" method=POST>
                         {% csrf_token %}
-                         {{ form.as_p }}
+                         {{ form2.as_p }}
                          <input type="submit" value="Submit" class="btn btn-primary">
-                    </form>
-            
+                    </form> 
+        </div> 
         {% endblock %}

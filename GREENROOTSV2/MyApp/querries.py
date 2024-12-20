@@ -63,7 +63,8 @@ def create_all_tables():
             weather_conditions VARCHAR(255) NOT NULL,
             pesticides_used BOOLEAN NOT NULL,
             nutrionistID INT NOT NULL, 
-            produceID INT NOT NULL,    
+            produceID INT NOT NULL, 
+            grade VARCHAR(10) NOT NULL,   
             FOREIGN KEY (nutrionistID) REFERENCES nutrition_specialist(NspecialistID) ON DELETE CASCADE,
             FOREIGN KEY (produceID) REFERENCES product(product_ID) ON DELETE CASCADE
         );""",
