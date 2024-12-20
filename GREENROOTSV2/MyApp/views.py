@@ -188,6 +188,8 @@ def delete_distrib(request, pk):
     
 
 def charts(request):
+    labelsPie = []  
+    valuesPie = []
     if request.method == 'POST':
         form1 = harvestedgradingForm(request.POST)
         if form1.is_valid():
@@ -244,26 +246,32 @@ def charts(request):
         result = []  
     labels = [row[0] for row in result]  
     counts = [row[1] for row in result]  
-   
-    selected_product = None   
+    
+    #PieChart
     if request.method == 'POST':
         form2 = productnutrition(request.POST )
         if form2.is_valid():
-            selected_batch_id = form2.cleaned_data['batchID']
-            
-            if selected_batch_id:
-                query = """ """
+            barcode = form2.cleaned_data['barcode']
+            if barcode:
+                query = """ SELECT fat_content, sugar_content, vitamin_content, mineral_content
+                        FROM nutrition_content_report
+                        WHERE barcode = %s """
                 with connection.cursor() as cursor:
-                    cursor.execute(query, [selected_batch_id])
-                    results = cursor.fetchall()
-
-
+                    cursor.execute(query, [barcode])
+                    r = cursor.fetchone()
+                    if r:
+                        fat_content, sugar_content, vitamin_content, mineral_content = r
+                        labelsPie = ['Fat', 'Sugar', 'Vitamin', 'Minerals']
+                        valuesPie = [fat_content, sugar_content, vitamin_content, mineral_content]
+    else:
+        form2 = productnutrition()
     return render(request, 'charts.html', {
-        'selected_product': selected_product,
         'labels': labels,
         'counts': counts,
         'form1' :form1,
         'form2' :form2,
+        'labelsPie' : labelsPie,
+        'valuesPie': valuesPie,
     })
 
 def FSC(request):
@@ -304,7 +312,7 @@ def FSC(request):
                     warehouse_distribution wd ON wd.warehouseid = w.warehouseid
                 JOIN 
                     vehicle v ON v.vehicle_id = dp.vehicle_id
-                WHERE fp.batch_id = %s;
+                WHERE fp.batch_id = %s
                 """
                 
                 with connection.cursor() as cursor:
