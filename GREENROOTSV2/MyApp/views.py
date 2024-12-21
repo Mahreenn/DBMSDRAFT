@@ -195,7 +195,7 @@ def charts(request):
         if form1.is_valid():
             sowing_date = form1.cleaned_data['sowing_date']
             harvest_date = form1.cleaned_data['harvest_date']
-            weight = form1.cleaned_data['weight']
+            weightt = form1.cleaned_data['weight']
             texture = form1.cleaned_data['texture']
             colour = form1.cleaned_data['colour']
             fungal_growth = form1.cleaned_data['fungal_growth']
@@ -223,7 +223,7 @@ def charts(request):
                     ) 
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s,%s,%s)
                     """, 
-                    [sowing_date, harvest_date, weight, texture, colour, fungal_growth, weather_conditions, pesticides_used,nutrionistID ,productID, grade])
+                    [sowing_date, harvest_date, weightt, texture, colour, fungal_growth, weather_conditions, pesticides_used,nutrionistID ,productID, grade])
         
             except IntegrityError as e:
                     print(f"Database error: {e}")
@@ -263,13 +263,17 @@ def charts(request):
                         fat_content, sugar_content, vitamin_content, mineral_content = r
                         labelsPie = ['Fat', 'Sugar', 'Vitamin', 'Minerals']
                         valuesPie = [fat_content, sugar_content, vitamin_content, mineral_content]
-
-                Q = """SELECT weight, material, cost_per_unit, facilityID as source
+                r2 = None
+                Q = """SELECT weight, material, cost_per_unit, facilityID 
                             FROM packed_produce
                             WHERE barcode = %s"""
                 with connection.cursor() as cursor:
                     cursor.execute(Q, [barcode])
-                    r2 = cursor.fetchall()
+                    r2 = cursor.fetchone()
+                if r2:
+                    weight, material, cost_per_unit, facilityID = r2
+                else:
+                    weight = material = cost_per_unit = facilityID = None
     else:
         form2 = productnutrition()
     return render(request, 'charts.html', {
@@ -279,7 +283,6 @@ def charts(request):
         'form2' :form2,
         'labelsPie' : labelsPie,
         'valuesPie': valuesPie,
-        'r2' : r2,
     })
 
 def FSC(request):
