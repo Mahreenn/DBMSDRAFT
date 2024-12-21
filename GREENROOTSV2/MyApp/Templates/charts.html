@@ -154,5 +154,26 @@
                 });
             </script>
         {% endif %}
+            <h3><strong>Packaging  Details</strong></h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Weight</th>
+                        <th scope="col">Materil</th>
+                        <th scope="col">cost per unit</th>
+                        <th scope="col">Source(FACILITY ID)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in r2 %}
+                    <tr>
+                        <td><strong>{{ row.0 }}</strong></td>
+                        <td><strong>{{ row.1 }}</strong></td>
+                        <td><strong>{{ row.2 }}</strong></td>
+                        <td><strong>{{ row.3 }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
         {% endblock %}

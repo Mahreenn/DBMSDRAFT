@@ -263,6 +263,13 @@ def charts(request):
                         fat_content, sugar_content, vitamin_content, mineral_content = r
                         labelsPie = ['Fat', 'Sugar', 'Vitamin', 'Minerals']
                         valuesPie = [fat_content, sugar_content, vitamin_content, mineral_content]
+
+                Q = """SELECT weight, material, cost_per_unit, facilityID as source
+                            FROM packed_produce
+                            WHERE barcode = %s"""
+                with connection.cursor() as cursor:
+                    cursor.execute(Q, [barcode])
+                    r2 = cursor.fetchall()
     else:
         form2 = productnutrition()
     return render(request, 'charts.html', {
@@ -272,6 +279,7 @@ def charts(request):
         'form2' :form2,
         'labelsPie' : labelsPie,
         'valuesPie': valuesPie,
+        'r2' : r2,
     })
 
 def FSC(request):
