@@ -115,7 +115,6 @@ def create_all_tables():
     FOREIGN KEY (gps_log_id) REFERENCES vehicle_gps_log(id)
         );""",
 
-
         """CREATE TABLE IF NOT EXISTS logistics_company (
             company_name VARCHAR(255) PRIMARY KEY,
             road VARCHAR(25) NOT NULL,
@@ -224,7 +223,6 @@ def create_all_tables():
             FOREIGN KEY (specialistID) REFERENCES government_specialist(specialist_id) ON DELETE CASCADE,
             CONSTRAINT unique_certificate UNIQUE (certificateName, facilityID, date_received)
         );"""
-
     ]
 
     with connection.cursor() as cursor:
@@ -520,7 +518,6 @@ def insert2():
             ('2023-03-27', 210.5, 21.5, 1230.0, 4, 2, 'B004'),
             ('2023-03-29', 180.6, 22.5, 1120.0, 5, 3, 'B005');
             """
-
 
     ]
 

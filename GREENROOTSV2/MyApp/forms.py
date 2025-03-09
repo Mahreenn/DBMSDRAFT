@@ -130,8 +130,8 @@ class fscform(forms.Form):
 class gradingform(forms.Form):
     date_recieved = forms.DateField(label=" Inspection completed on", widget=forms.SelectDateWidget(years=range(2016, 2024)))
     inspection_expiry_date = forms.DateField(label="Inspection invalid after", widget=forms.SelectDateWidget(years=range(2016, 2030)))
-    ventilation = forms.IntegerField(label="Ventillation score:", required=True, min_value=0.0)
-    cleanliness = forms.IntegerField(label="Cleanliness score", required=True, min_value=0.0)
+    ventilation = forms.IntegerField(label="Ventillation score:", required=True, min_value=0.0, max_value=10)
+    cleanliness = forms.IntegerField(label="Cleanliness score", required=True, min_value=0.0, max_value=10)
     warehouseid = forms.ChoiceField(label="warehouse ID:", required=True)
     inspector_id = forms.ChoiceField(label="Inspector ID:", required=True)
     
